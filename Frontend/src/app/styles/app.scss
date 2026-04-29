@@ -1,0 +1,44 @@
+[data-theme="light"] {
+  --bg: #ffffff;
+  --text: #171717;
+  --toggle-bg: #ffffff;
+  --toggle-border: #e5e5e5;
+  --toggle-text: #404040;
+}
+
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --text: #ededed;
+  --toggle-bg: #262626;
+  --toggle-border: #404040;
+  --toggle-text: #d4d4d4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:
+    "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--text);
+  height: 100%;
+  width: 100%;
+  transition:
+    background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  height: 100%;
+  width: 100%;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}

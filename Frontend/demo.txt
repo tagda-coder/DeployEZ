@@ -1,1 +1,0 @@
-Your Frontend code will be inside this frontend folder.
