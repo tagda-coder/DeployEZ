@@ -12,7 +12,6 @@ exports.signup = async (req, res) => {
     username: Joi.string().alphanum().min(3).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
-    bio: Joi.string().max(500).optional(),
   });
 
   const { error } = schema.validate(req.body);
@@ -23,7 +22,7 @@ exports.signup = async (req, res) => {
   }
 
   try {
-    const { username, email, password, bio } = req.body;
+    const { username, email, password } = req.body;
 
     // Hash user password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,7 +34,6 @@ exports.signup = async (req, res) => {
         username,
         email,
         password: hashedPassword,
-        bio,
       });
     } catch (err) {
       // Handle duplicate username or email error
@@ -135,7 +133,7 @@ exports.login = async (req, res) => {
     // send success response with user data
     return res.status(200).json({
       success: true,
-      token: token,
+      // token: token,
       Message: "Login successful",
       user: userResponse,
     });
@@ -158,6 +156,7 @@ exports.logout = async (req, res) => {
     // res.clearCookie("token");
 
     // BlackListing token using REDIS
+    res.clearCookie("token");
     await redis.set(token, Date.now().toString(), "EX", 60 * 60);
     return res.status(200).json({
       message: "Logout Successfully.",
