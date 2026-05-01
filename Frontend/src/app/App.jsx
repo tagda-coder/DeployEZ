@@ -5,10 +5,20 @@ import { router } from "./app.routes";
 import { RouterProvider } from "react-router";
 
 // styles
-import "./styles/app.scss";
-import { useTheme } from "../shared/hook/useTheme";
+import "./app.css";
+import { useTheme } from "../features/shared/hook/useTheme";
 
 function App() {
+  // const { handleGetMe } = useAuth()
+
+  // const user = useSelector(state => state.auth.user)
+
+  // console.log(user)
+
+  // useEffect(() => {
+  //   handleGetMe()
+  // }, [])
+
   const { theme } = useTheme();
 
   return (

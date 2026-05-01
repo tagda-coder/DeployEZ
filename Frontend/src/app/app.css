@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Transitions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* LIGHT THEME */
+  /* Backgrounds */
+  --light-bg-base: #ffff;
+
+  /* Accent */
+
+  /* DARK THEME */
+  /* Backgrounds */
+  --dark-bg-base: #111;
+
+  /* Accent */
+}
+
+@layer base {
+  * {
+    @apply transition-colors duration-400;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}

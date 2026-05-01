@@ -1,0 +1,232 @@
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router";
+import { Layout, Mail, Lock, ArrowLeft, User, Eye, EyeOff } from "lucide-react";
+
+// components
+import BackgroundPattern from "../../shared/components/BackgroundPattern";
+import { ThemeToggle } from "../../shared/components/ThemeToggle";
+
+// hooks
+import { useAuth } from "../hook/useAuth";
+
+const Auth = () => {
+  const navigate = useNavigate();
+  const { actionLoading, handleRegister, handleLogin } = useAuth();
+
+  const [isLogin, setIsLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const cardRef = useRef(null);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    const result = await handleRegister({
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+    });
+    if (result?.success) {
+      // setShowVerifyModal(true);
+      return;
+    }
+  };
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    const result = await handleLogin({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (result?.success) {
+      // await redirectAfterLogin();
+      return;
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-[#0a0a0a] text-neutral-900 dark:text-neutral-50 font-sans selection:bg-neutral-500/30 overflow-hidden relative px-4 transition-colors duration-700">
+      {/* Background Pattern */}
+      <BackgroundPattern />
+
+      {/* Top Controls */}
+      <button
+        onClick={() => navigate("/landing")}
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors group cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
+        Back to Landing Page
+      </button>
+
+      <ThemeToggle style={"absolute top-6 right-6"} />
+
+      {/* Main Auth Card */}
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        className="w-full max-w-md relative z-10 bg-white dark:bg-[#111] border border-neutral-200 dark:border-neutral-800 rounded-3xl p-8 shadow-2xl overflow-hidden animate-[fadeIn_0.5s_ease-out]"
+      >
+        <div
+          className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100 dark:opacity-100"
+          style={{
+            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.03), transparent 40%)`,
+          }}
+        />
+
+        <div className="relative z-10">
+          <div className="flex flex-col items-center mb-8">
+            <div className="bg-neutral-900 dark:bg-white p-3 rounded-2xl mb-4 shadow-sm transform transition-transform hover:scale-105 duration-300">
+              <Layout className="w-8 h-8 text-white dark:text-neutral-900" />
+            </div>
+            <h2 className="text-3xl font-medium tracking-tight mb-2 text-neutral-900 dark:text-white">
+              {isLogin ? "Welcome back" : "Create an account"}
+            </h2>
+            <p className="text-neutral-500 font-light text-center">
+              {isLogin
+                ? "Enter your details to access your workspace."
+                : "Start shipping better videos faster."}
+            </p>
+          </div>
+
+          <form
+            className="space-y-4"
+            onSubmit={isLogin ? handleLoginSubmit : handleRegisterSubmit}
+          >
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${isLogin ? "max-h-0 opacity-0" : "max-h-25 opacity-100"}`}
+            >
+              <div className="space-y-1.5 pb-2">
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400 ml-1">
+                  Full Name
+                </label>
+                <div className="relative group">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-focus-within:text-neutral-900 dark:group-focus-within:text-neutral-200 transition-colors" />
+                  <input
+                    required={!isLogin}
+                    type="text"
+                    name="username"
+                    placeholder="Jane Doe"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="w-full bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-xl py-3 pl-12 pr-4 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400 ml-1">
+                Email Address
+              </label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-focus-within:text-neutral-900 dark:group-focus-within:text-neutral-200 transition-colors" />
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  placeholder="you@creator.com"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-xl py-3 pl-12 pr-4 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400">
+                  Password
+                </label>
+                {isLogin && (
+                  <a
+                    href="#"
+                    className="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                  >
+                    Forgot password?
+                  </a>
+                )}
+              </div>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-focus-within:text-neutral-900 dark:group-focus-within:text-neutral-200 transition-colors" />
+                <input
+                  required
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-xl py-3 pl-12 pr-12 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={actionLoading}
+                className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 font-medium py-3.5 rounded-xl transition-colors shadow-lg disabled:bg-neutral-400 dark:disabled:bg-neutral-400 disabled:cursor-not-allowed"
+              >
+                {actionLoading
+                  ? isLogin
+                    ? "Signing in..."
+                    : "Creating account..."
+                  : isLogin
+                    ? "Sign In"
+                    : "Create Account"}
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-8 text-center text-sm text-neutral-500 dark:text-neutral-500">
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setShowPassword(false);
+                setFormData({ username: "", email: "", password: "" });
+              }}
+              className="text-neutral-900 dark:text-white font-medium hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
+            >
+              {isLogin ? "Sign up" : "Log in"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Auth;
