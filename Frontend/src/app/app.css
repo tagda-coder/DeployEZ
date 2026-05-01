@@ -7,15 +7,31 @@
 
   /* LIGHT THEME */
   /* Backgrounds */
-  --light-bg-base: #ffff;
+  --bg-base: #f9f8f3;
+  --pattern-base-bg:
+    linear-gradient(to right, #44403c0d 1px, transparent 1px),
+    linear-gradient(to bottom, #44403c0d 1px, transparent 1px);
 
-  /* Accent */
+  /* Colors */
+  --text-base: #111;
 
+  /* Accents */
+  --color-accent: #92400e;
+}
+
+.dark {
   /* DARK THEME */
   /* Backgrounds */
-  --dark-bg-base: #111;
+  --bg-base: #111;
+  --pattern-base-bg:
+    linear-gradient(to right, #80808012 1px, transparent 1px),
+    linear-gradient(to bottom, #80808012 1px, transparent 1px);
 
-  /* Accent */
+  /* Colors */
+  --text-base: whitesmoke;
+
+  /* Accents */
+  --color-accent: #d4af37;
 }
 
 @layer base {
@@ -23,4 +39,8 @@
     @apply transition-colors duration-400;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
+}
+
+.active {
+  color: var(--color-accent);
 }

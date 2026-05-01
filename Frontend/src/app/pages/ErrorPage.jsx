@@ -1,5 +1,17 @@
+// components
+import BackgroundPattern from "../../features/shared/components/BackgroundPattern";
+import StylishHeader from "../../features/shared/components/StylishHeader";
+import { ThemeToggle } from "../../features/shared/components/ThemeToggle";
+
 const ErrorPage = () => {
-  return <div>ErrorPage</div>;
+  return (
+    <div className="min-h-screen bg-(--bg-base) text-(--text-base) flex justify-center">
+      <BackgroundPattern />
+      <StylishHeader />
+      <ThemeToggle style={"absolute top-6 left-6"} />
+      <div className="mt-50 text-2xl">Error Page</div>
+    </div>
+  );
 };
 
 export default ErrorPage;

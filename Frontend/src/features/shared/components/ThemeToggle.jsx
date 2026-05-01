@@ -1,7 +1,7 @@
 import { useTheme } from "../hook/useTheme";
 import { Moon, Sun } from "lucide-react";
 
-export function ThemeToggle({style}) {
+export function ThemeToggle({ style }) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 

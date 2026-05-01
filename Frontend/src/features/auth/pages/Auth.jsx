@@ -66,7 +66,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-[#0a0a0a] text-neutral-900 dark:text-neutral-50 font-sans selection:bg-neutral-500/30 overflow-hidden relative px-4 transition-colors duration-700">
+    <div className="min-h-screen flex items-center justify-center bg-(--bg-base) text-neutral-900 dark:text-neutral-50 font-sans selection:bg-neutral-500/30 overflow-hidden relative px-4 transition-colors duration-700">
       {/* Background Pattern */}
       <BackgroundPattern />
 
