@@ -8,30 +8,78 @@
   /* LIGHT THEME */
   /* Backgrounds */
   --bg-base: #f9f8f3;
+  --card-bg: whitesmoke;
+  --input-bg: #fafafa;
   --pattern-base-bg:
     linear-gradient(to right, #44403c0d 1px, transparent 1px),
     linear-gradient(to bottom, #44403c0d 1px, transparent 1px);
 
   /* Colors */
-  --text-base: #111;
+  --text-base: #171717;
+  --text-muted: #737373;
+  --text-muted-hover: #171717;
+  --text-primary: #171717;
+  --text-label: #404040;
 
   /* Accents */
   --color-accent: #92400e;
+  --color-icon: #a3a3a3;
+  --color-icon-active: #171717;
+  --color-input: #171717;
+  --color-placeholder: #a3a3a3;
+  --color-link: #171717;
+  --color-link-hover: #525252;
+
+  /* Borders */
+  --card-border: #e5e5e5;
+  --input-border: #e5e5e5;
+  --input-border-focus: #a3a3a3;
+
+  /* Buttons */
+  --btn-primary-bg: #171717;
+  --btn-primary-bg-hover: whitesmoke;
+  --btn-primary-text: whitesmoke;
+  --btn-primary-text-hover: #0a0a0a;
+  --btn-disabled-bg: #a3a3a3;
 }
 
 .dark {
   /* DARK THEME */
   /* Backgrounds */
   --bg-base: #111;
+  --card-bg: #111;
+  --input-bg: rgba(23, 23, 23, 0.5);
   --pattern-base-bg:
     linear-gradient(to right, #80808012 1px, transparent 1px),
     linear-gradient(to bottom, #80808012 1px, transparent 1px);
 
   /* Colors */
-  --text-base: whitesmoke;
+  --text-base: #fafafa;
+  --text-muted: #a3a3a3;
+  --text-muted-hover: whitesmoke;
+  --text-primary: whitesmoke;
+  --text-label: #a3a3a3;
 
   /* Accents */
   --color-accent: #d4af37;
+  --color-icon: #737373;
+  --color-icon-active: #e5e5e5;
+  --color-input: whitesmoke;
+  --color-placeholder: #525252;
+  --color-link: whitesmoke;
+  --color-link-hover: #828282;
+
+  /* Borders */
+  --card-border: #262626;
+  --input-border: #262626;
+  --input-border-focus: #737373;
+
+  /* Buttons */
+  --btn-primary-bg: #f5f5f5;
+  --btn-primary-bg-hover: #262626;
+  --btn-primary-text: #0a0a0a;
+  --btn-primary-text-hover: whitesmoke;
+  --btn-disabled-bg: #525252;
 }
 
 @layer base {

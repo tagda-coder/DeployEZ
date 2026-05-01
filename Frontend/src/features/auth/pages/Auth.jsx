@@ -66,14 +66,14 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-(--bg-base) text-neutral-900 dark:text-neutral-50 font-sans selection:bg-neutral-500/30 overflow-hidden relative px-4 transition-colors duration-700">
+    <div className="min-h-screen flex items-center justify-center bg-(--bg-base) text-(--text-base) font-sans selection:bg-neutral-500/30 overflow-hidden relative px-4 transition-colors duration-700">
       {/* Background Pattern */}
       <BackgroundPattern />
 
       {/* Top Controls */}
       <button
         onClick={() => navigate("/landing")}
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors group cursor-pointer"
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-sm font-medium text-(--text-muted) hover:text-(--text-muted-hover) transition-colors group cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
         Back to Landing Page
@@ -85,7 +85,7 @@ const Auth = () => {
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
-        className="w-full max-w-md relative z-10 bg-white dark:bg-[#111] border border-neutral-200 dark:border-neutral-800 rounded-3xl p-8 shadow-2xl overflow-hidden animate-[fadeIn_0.5s_ease-out]"
+        className="w-full max-w-md relative z-10 bg-(--card-bg) border border-(--card-border) rounded-3xl p-8 shadow-2xl overflow-hidden animate-[fadeIn_0.5s_ease-out]"
       >
         <div
           className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100 dark:opacity-100"
@@ -99,10 +99,10 @@ const Auth = () => {
             <div className="bg-neutral-900 dark:bg-white p-3 rounded-2xl mb-4 shadow-sm transform transition-transform hover:scale-105 duration-300">
               <Layout className="w-8 h-8 text-white dark:text-neutral-900" />
             </div>
-            <h2 className="text-3xl font-medium tracking-tight mb-2 text-neutral-900 dark:text-white">
+            <h2 className="text-3xl font-medium tracking-tight mb-2 text-(--text-primary)">
               {isLogin ? "Welcome back" : "Create an account"}
             </h2>
-            <p className="text-neutral-500 font-light text-center">
+            <p className="text-(--text-muted) font-light text-center">
               {isLogin
                 ? "Enter your details to access your workspace."
                 : "Start shipping better videos faster."}
@@ -117,11 +117,11 @@ const Auth = () => {
               className={`overflow-hidden transition-all duration-500 ease-in-out ${isLogin ? "max-h-0 opacity-0" : "max-h-25 opacity-100"}`}
             >
               <div className="space-y-1.5 pb-2">
-                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400 ml-1">
+                <label className="text-sm font-medium text-(--text-label) ml-1">
                   Full Name
                 </label>
                 <div className="relative group">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-focus-within:text-neutral-900 dark:group-focus-within:text-neutral-200 transition-colors" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--color-icon) group-focus-within:text-(--color-icon-active) transition-colors" />
                   <input
                     required={!isLogin}
                     type="text"
@@ -129,18 +129,18 @@ const Auth = () => {
                     placeholder="Jane Doe"
                     value={formData.username}
                     onChange={handleInputChange}
-                    className="w-full bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-xl py-3 pl-12 pr-4 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-all"
+                    className="w-full bg-(--input-bg) border border-(--input-border) rounded-xl py-3 pl-12 pr-4 text-(--color-input) placeholder:text-(--color-placeholder) focus:outline-none focus:border-(--input-border-focus) transition-all"
                   />
                 </div>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400 ml-1">
+              <label className="text-sm font-medium text-(--text-label) ml-1">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-focus-within:text-neutral-900 dark:group-focus-within:text-neutral-200 transition-colors" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--color-icon) group-focus-within:text-(--color-icon-active) transition-colors" />
                 <input
                   required
                   type="email"
@@ -148,27 +148,27 @@ const Auth = () => {
                   placeholder="you@creator.com"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-xl py-3 pl-12 pr-4 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-all"
+                  className="w-full bg-(--input-bg) border border-(--input-border) rounded-xl py-3 pl-12 pr-4 text-(--color-input) placeholder:text-(--color-placeholder) focus:outline-none focus:border-(--input-border-focus) transition-all"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center ml-1">
-                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400">
+                <label className="text-sm font-medium text-(--text-label)">
                   Password
                 </label>
                 {isLogin && (
                   <a
                     href="#"
-                    className="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                    className="text-xs text-(--text-muted) hover:text-(--text-muted-hover) transition-colors"
                   >
                     Forgot password?
                   </a>
                 )}
               </div>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 group-focus-within:text-neutral-900 dark:group-focus-within:text-neutral-200 transition-colors" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--color-icon)group-focus-within:text-(--color-icon-active) transition-colors" />
                 <input
                   required
                   type={showPassword ? "text" : "password"}
@@ -176,12 +176,12 @@ const Auth = () => {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-xl py-3 pl-12 pr-12 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 transition-all"
+                  className="w-full bg-(--input-bg) border border-(--input-border) rounded-xl py-3 pl-12 pr-4 text-(--color-input) placeholder:text-(--color-placeholder) focus:outline-none focus:border-(--input-border-focus) transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-(--color-icon) hover:text-(--color-icon-active) transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -196,7 +196,7 @@ const Auth = () => {
               <button
                 type="submit"
                 disabled={actionLoading}
-                className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 font-medium py-3.5 rounded-xl transition-colors shadow-lg disabled:bg-neutral-400 dark:disabled:bg-neutral-400 disabled:cursor-not-allowed"
+                className="w-full bg-(--btn-primary-bg) hover:bg-(--btn-primary-bg-hover) text-(--btn-primary-text) hover:text-(--btn-primary-text-hover) font-medium py-3.5 rounded-xl transition-colors shadow-lg cursor-pointer disabled:bg-(--btn-disabled-bg) disabled:cursor-not-allowed"
               >
                 {actionLoading
                   ? isLogin
@@ -218,7 +218,7 @@ const Auth = () => {
                 setShowPassword(false);
                 setFormData({ username: "", email: "", password: "" });
               }}
-              className="text-neutral-900 dark:text-white font-medium hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
+              className="text-(--color-link) font-medium hover:text-(--color-link-hover) transition-colors cursor-pointer"
             >
               {isLogin ? "Sign up" : "Log in"}
             </button>
