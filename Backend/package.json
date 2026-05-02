@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1041.0",
     "@types/express": "^5.0.6",
     "aws-sdk": "^2.1693.0",
     "bcrypt": "^6.0.0",
@@ -27,6 +28,17 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "nodemonConfig": {
+    "watch": [
+      "src",
+      "server.js",
+      ".env"
+    ],
+    "ignore": [
+      "deployments/**",
+      "node_modules/**"
+    ]
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "eslint": "^9.39.4",
