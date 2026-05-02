@@ -27,14 +27,7 @@ const Layout = () => {
       const clickedOutsideMobile = mobileMenuRef.current && !mobileMenuRef.current.contains(event.target);
       const clickedOutsideDesktop = desktopMenuRef.current && !desktopMenuRef.current.contains(event.target);
       
-      // If the clicked element is inside ANY of the user menu popovers, do not close.
-      // Wait, if it clicked OUTSIDE both, close it.
       if ((!mobileMenuRef.current || clickedOutsideMobile) && (!desktopMenuRef.current || clickedOutsideDesktop)) {
-        // Only close if it's not the user button itself being clicked
-        // The buttons themselves should handle toggling, but to prevent race conditions,
-        // we should ensure it's not a click on the toggle button. A simple fix is just closing it.
-        // But clicking the button might re-open it.
-        // A better approach is to let the button stop propagation or check closest.
         if (!event.target.closest('.user-menu-trigger')) {
           setShowUserMenu(false);
         }
