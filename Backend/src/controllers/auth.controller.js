@@ -1,12 +1,12 @@
-require("dotenv").config();
-const User = require("../models/user.model");
+import "dotenv/config";
+import User from "../models/user.model.js";
 // const BlackList = require("../models/blacklist.model");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const Joi = require("joi");
-const redis = require("../config/cache");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import Joi from "joi";
+import redis from "../config/cache.js";
 // SIGNUP LOGIC
-exports.signup = async (req, res) => {
+export const signup = async (req, res) => {
   // Validate incoming request data
   const schema = Joi.object({
     username: Joi.string().alphanum().min(3).max(30).required(),
@@ -83,7 +83,7 @@ exports.signup = async (req, res) => {
 };
 
 // LOGIN LOGIC
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   // Joi validation (email, password)
   const Schema = Joi.object({
     email: Joi.string().email(),
@@ -146,7 +146,7 @@ exports.login = async (req, res) => {
 };
 
 // LOGOUT LOGIC
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
   try {
     const token = req.cookies.token;
     // // saving this token in MongoDB BlackListed DB
