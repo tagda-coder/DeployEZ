@@ -1,5 +1,6 @@
 import { X, GitPullRequest, UploadCloud, FolderUp, GitBranch, ArrowRight, FolderArchive, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { useProjects } from "../../../context/ProjectContext";
 
@@ -35,7 +36,7 @@ const NewProjectModal = ({ onClose }) => {
     navigate(`/project/${newProject.id}`);
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-3xl bg-(--bg-base) border border-(--card-border) rounded-2xl shadow-2xl animate-in slide-in-from-bottom-4 zoom-in-95 duration-300 flex flex-col max-h-[85vh]">
         
@@ -160,7 +161,8 @@ const NewProjectModal = ({ onClose }) => {
            </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
