@@ -1,12 +1,14 @@
-import { CloudUpload, ExternalLink, GitCommit, FileText, CheckCircle2, Clock, Terminal, Settings2, Settings as SettingsIcon } from "lucide-react";
+import { CloudUpload, ExternalLink, GitCommit, FileText, CheckCircle2, Clock, Terminal, Settings2, Settings as SettingsIcon, RotateCcw, PauseCircle } from "lucide-react";
 import { Link, useParams } from "react-router";
 import { useState } from "react";
 import Environment from "./Environment";
 import { useProjects } from "../../../context/ProjectContext";
+import NewDeployModal from "./NewDeployModal";
 
 const ProjectOverview = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("deployments");
+  const [showDeployModal, setShowDeployModal] = useState(false);
   const { projects, addDeployment } = useProjects();
   
   const project = projects.find(p => p.id === id) || projects[0];
@@ -14,19 +16,39 @@ const ProjectOverview = () => {
   return (
     <div className="flex flex-col gap-6 w-full animate-in slide-in-from-bottom-4 fade-in duration-500 pb-10">
       
+      {showDeployModal && <NewDeployModal onClose={() => setShowDeployModal(false)} projectId={project?.id} />}
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4 relative z-10 w-full">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-(--text-primary)">{project?.name || id}</h1>
           <p className="text-(--text-muted) mt-1">Manage project deployments, environments, and settings.</p>
         </div>
-        <button 
-          onClick={() => addDeployment(project?.id)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md"
-        >
-          <CloudUpload className="w-4 h-4" />
-          <span>New Deploy</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            className="flex items-center gap-2 px-4 py-2 bg-(--bg-base) border border-(--card-border) text-(--text-primary) hover:border-(--color-accent) hover:text-(--color-accent) rounded-lg font-medium transition-all duration-300 shadow-sm"
+            onClick={() => alert("Project restarted")}
+            title="Restart Project"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span className="hidden sm:inline">Restart</span>
+          </button>
+          <button 
+            className="flex items-center gap-2 px-4 py-2 bg-(--bg-base) border border-(--card-border) text-(--text-primary) hover:border-(--status-error) hover:text-(--status-error) rounded-lg font-medium transition-all duration-300 shadow-sm"
+            onClick={() => alert("Project suspended")}
+            title="Suspend Project"
+          >
+            <PauseCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Suspend</span>
+          </button>
+          <button 
+            onClick={() => setShowDeployModal(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md"
+          >
+            <CloudUpload className="w-4 h-4" />
+            <span>New Deploy</span>
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-6 border-b border-(--card-border) relative z-10 w-full mt-2">
