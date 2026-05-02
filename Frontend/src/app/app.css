@@ -135,12 +135,39 @@
 }
 
 @layer base {
-  * {
-    @apply transition-colors duration-400;
+  body {
+    @apply transition-colors duration-300;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
 .active {
   color: var(--color-accent);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-in.fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-in.slide-in-from-bottom-4 {
+  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-in.slide-in-from-right-8 {
+  animation: slideRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
