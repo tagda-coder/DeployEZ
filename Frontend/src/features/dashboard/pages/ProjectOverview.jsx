@@ -78,7 +78,8 @@ const ProjectOverview = () => {
       <div className="mt-4 flex flex-col relative z-10 w-full max-w-6xl">
         {activeTab === "deployments" && (
           <div className="bg-(--card-bg) border border-(--card-border) rounded-2xl overflow-hidden shadow-sm animate-in fade-in duration-300">
-             <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] p-4 border-b border-(--card-border) bg-(--bg-base) text-sm font-medium text-(--text-muted)">
+             {/* Table Header (hidden on mobile) */}
+             <div className="hidden md:grid grid-cols-[1.5fr_1fr_1fr_1fr] p-4 border-b border-(--card-border) bg-(--bg-base) text-sm font-medium text-(--text-muted)">
                <div>Branch</div>
                <div>Commit</div>
                <div>Status / Time</div>
@@ -87,26 +88,47 @@ const ProjectOverview = () => {
   
              <div className="flex flex-col">
                {project?.deployments?.map((dep, i) => (
-                  <div key={i} className="grid grid-cols-[1.5fr_1fr_1fr_1fr] items-center p-5 border-b border-(--card-border) hover:bg-(--bg-base) transition-all duration-300 group">
+                  <div key={i} className="flex flex-col md:grid md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-3 md:gap-0 md:items-center p-5 border-b border-(--card-border) hover:bg-(--bg-base) transition-all duration-300 group">
                     
-                    {/* Branch info */}
-                    <div className="flex items-center gap-4">
-                      <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] ${dep.status === 'Success' ? 'bg-(--status-success) text-(--status-success)' : dep.status === 'Building' ? 'bg-(--status-warning) text-(--status-warning) animate-pulse' : 'bg-(--status-error) text-(--status-error)'}`}></div>
-                      <div className="flex flex-col">
-                        <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="font-semibold text-(--text-primary) hover:text-(--color-accent) transition-colors">
+                    {/* Mobile Header: Branch & Actions */}
+                    <div className="flex items-center justify-between md:hidden w-full">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2 h-2 rounded-full shrink-0 shadow-[0_0_8px_currentColor] ${dep.status === 'Success' ? 'bg-(--status-success) text-(--status-success)' : dep.status === 'Building' ? 'bg-(--status-warning) text-(--status-warning) animate-pulse' : 'bg-(--status-error) text-(--status-error)'}`}></div>
+                        <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="font-semibold text-(--text-primary) hover:text-(--color-accent) transition-colors truncate max-w-[200px]">
+                          {dep.branch}
+                        </Link>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="p-1.5 bg-(--bg-base) border border-(--card-border) rounded-md shadow-sm text-(--text-muted) hover:text-(--text-primary)">
+                           <FileText className="w-3.5 h-3.5" />
+                        </Link>
+                        <a href={`https://${project?.url || id + '.deployez.app'}`} target="_blank" rel="noreferrer" className="p-1.5 bg-(--bg-base) border border-(--card-border) rounded-md shadow-sm text-(--text-muted) hover:text-(--text-primary)">
+                           <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Desktop Branch info */}
+                    <div className="hidden md:flex items-center gap-4">
+                      <div className={`w-2 h-2 rounded-full shrink-0 shadow-[0_0_8px_currentColor] ${dep.status === 'Success' ? 'bg-(--status-success) text-(--status-success)' : dep.status === 'Building' ? 'bg-(--status-warning) text-(--status-warning) animate-pulse' : 'bg-(--status-error) text-(--status-error)'}`}></div>
+                      <div className="flex flex-col min-w-0">
+                        <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="font-semibold text-(--text-primary) hover:text-(--color-accent) transition-colors truncate">
                           {dep.branch}
                         </Link>
                       </div>
                     </div>
   
                     {/* Commit info */}
-                    <div className="flex flex-col justify-center">
-                      <span className="text-sm font-medium font-mono text-(--text-primary)">{dep.commit}</span>
-                      <span className="text-xs text-(--text-muted) truncate max-w-[180px] mt-1" title={dep.commitMsg}>{dep.commitMsg}</span>
+                    <div className="flex flex-col justify-center pl-5 md:pl-0">
+                      <div className="flex items-center gap-2">
+                        <GitCommit className="w-3.5 h-3.5 text-(--text-muted) md:hidden" />
+                        <span className="text-sm font-medium font-mono text-(--text-primary)">{dep.commit}</span>
+                      </div>
+                      <span className="text-xs text-(--text-muted) truncate md:max-w-[180px] mt-1 ml-5 md:ml-0" title={dep.commitMsg}>{dep.commitMsg}</span>
                     </div>
   
                     {/* Status & Time */}
-                    <div className="flex flex-col justify-center">
+                    <div className="flex items-center md:flex-col md:items-start md:justify-center gap-3 md:gap-0 pl-5 md:pl-0 mt-1 md:mt-0">
                       <div className="flex items-center gap-1.5">
                         {dep.status === 'Success' && <CheckCircle2 className="w-3.5 h-3.5 text-(--status-success)" />}
                         {dep.status === 'Building' && <Clock className="w-3.5 h-3.5 text-(--status-warning)" />}
@@ -115,11 +137,12 @@ const ProjectOverview = () => {
                           {dep.status}
                         </span>
                       </div>
-                      <span className="text-xs text-(--text-muted) mt-1">{dep.time}</span>
+                      <span className="hidden md:inline text-xs text-(--text-muted) mt-1">{dep.time}</span>
+                      <span className="md:hidden text-xs text-(--text-muted) border-l border-(--card-border) pl-3">{dep.time}</span>
                     </div>
   
-                    {/* Actions */}
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {/* Desktop Actions */}
+                    <div className="hidden md:flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="View Logs">
                          <FileText className="w-4 h-4" />
                       </Link>
