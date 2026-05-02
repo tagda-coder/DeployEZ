@@ -1,10 +1,13 @@
 import { X, GitPullRequest, UploadCloud, FolderUp, GitBranch, ArrowRight, FolderArchive, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
+import { useProjects } from "../../../context/ProjectContext";
 
 const NewProjectModal = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState("github"); // "github" | "upload"
   const [selectedRepo, setSelectedRepo] = useState("");
+  const { addProject } = useProjects();
+  const navigate = useNavigate();
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -20,6 +23,17 @@ const NewProjectModal = ({ onClose }) => {
     { name: "marketing-site", updated: "3d ago", private: false },
     { name: "legacy-dashboard", updated: "2w ago", private: true },
   ];
+
+  const handleDeploy = () => {
+    const projectName = selectedRepo || (activeTab === "upload" ? "uploaded-project" : "deployez-frontend");
+    const newProject = addProject({
+      name: projectName,
+      framework: "React",
+      branch: "main"
+    });
+    onClose();
+    navigate(`/project/${newProject.id}`);
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -137,14 +151,13 @@ const NewProjectModal = ({ onClose }) => {
            >
              Cancel
            </button>
-           <Link 
-             to={`/project/${selectedRepo || 'deployez-frontend'}`}
-             onClick={onClose}
+           <button 
+             onClick={handleDeploy}
              className="flex items-center gap-2 px-5 py-2 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
            >
              <UploadCloud className="w-4 h-4" />
              Deploy Project
-           </Link>
+           </button>
         </div>
       </div>
     </div>

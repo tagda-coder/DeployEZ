@@ -2,9 +2,11 @@ import { Plus, Globe, ExternalLink, Activity, ArrowRight, Server } from "lucide-
 import { Link } from "react-router";
 import { useState } from "react";
 import NewProjectModal from "./NewProjectModal";
+import { useProjects } from "../../../context/ProjectContext";
 
 const Dashboard = () => {
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const { projects } = useProjects();
 
   return (
     <div className="flex flex-col gap-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
@@ -35,7 +37,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-3xl font-bold text-(--text-primary)">8</h3>
+            <h3 className="text-3xl font-bold text-(--text-primary)">{projects.length}</h3>
             <p className="text-xs text-(--status-success) mt-1 font-medium">+2 this week</p>
           </div>
         </div>
@@ -48,7 +50,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-3xl font-bold text-(--text-primary)">24</h3>
+            <h3 className="text-3xl font-bold text-(--text-primary)">{projects.reduce((acc, p) => acc + p.deployments.length, 0)}</h3>
             <p className="text-xs text-(--text-muted) mt-1 font-medium">Avg build time: 42s</p>
           </div>
         </div>
@@ -75,12 +77,8 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {[
-            { name: "deployez-frontend", framework: "React", time: "2h ago", branch: "main", url: "deployez-frontend.vercel.app" },
-            { name: "api-gateway-service", framework: "Node.js", time: "5h ago", branch: "production", url: "api.deployez.com" },
-            { name: "marketing-site", framework: "Next.js", time: "1d ago", branch: "main", url: "deployez.com" },
-          ].map((project, i) => (
-            <Link key={i} to={`/project/${project.name}`} className="group bg-(--card-bg) border border-(--card-border) rounded-2xl p-6 hover:shadow-lg hover:border-(--color-accent) transition-all duration-300 flex flex-col gap-6">
+          {projects.map((project, i) => (
+            <Link key={i} to={`/project/${project.id}`} className="group bg-(--card-bg) border border-(--card-border) rounded-2xl p-6 hover:shadow-lg hover:border-(--color-accent) transition-all duration-300 flex flex-col gap-6">
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-(--bg-base) border border-(--card-border) flex items-center justify-center">
@@ -91,7 +89,7 @@ const Dashboard = () => {
                     <p className="text-xs text-(--text-muted)">{project.url}</p>
                   </div>
                 </div>
-                <div className="w-2 h-2 rounded-full bg-(--status-success)"></div>
+                <div className={`w-2 h-2 rounded-full ${project.deployments[0]?.status === 'Building' ? 'bg-(--status-warning) shadow-[0_0_8px_var(--status-warning)] animate-pulse' : project.deployments[0]?.status === 'Failed' ? 'bg-(--status-error)' : 'bg-(--status-success)'}`}></div>
               </div>
 
               <div className="flex items-center gap-4 text-sm text-(--text-muted)">

@@ -2,10 +2,14 @@ import { CloudUpload, ExternalLink, GitCommit, FileText, CheckCircle2, Clock, Te
 import { Link, useParams } from "react-router";
 import { useState } from "react";
 import Environment from "./Environment";
+import { useProjects } from "../../../context/ProjectContext";
 
 const ProjectOverview = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("deployments");
+  const { projects, addDeployment } = useProjects();
+  
+  const project = projects.find(p => p.id === id) || projects[0];
 
   return (
     <div className="flex flex-col gap-6 w-full animate-in slide-in-from-bottom-4 fade-in duration-500 pb-10">
@@ -13,10 +17,13 @@ const ProjectOverview = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4 relative z-10 w-full">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-(--text-primary)">{id || "deployez-frontend"}</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-(--text-primary)">{project?.name || id}</h1>
           <p className="text-(--text-muted) mt-1">Manage project deployments, environments, and settings.</p>
         </div>
-        <button className="flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md">
+        <button 
+          onClick={() => addDeployment(project?.id)}
+          className="flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md"
+        >
           <CloudUpload className="w-4 h-4" />
           <span>New Deploy</span>
         </button>
@@ -57,11 +64,7 @@ const ProjectOverview = () => {
              </div>
   
              <div className="flex flex-col">
-               {[
-                 { id: "dep_982bfe12", time: "2 mins ago", status: "Success", branch: "main", commit: "a1b2c3d", commitMsg: "Update UI for Deployments" },
-                 { id: "dep_447abc99", time: "1 hour ago", status: "Building", branch: "feat/auth", commit: "4f5g6h7", commitMsg: "Add login page" },
-                 { id: "dep_102xyz88", time: "1 day ago", status: "Failed", branch: "main", commit: "8i9j0k1", commitMsg: "Fix styling issues" },
-               ].map((dep, i) => (
+               {project?.deployments?.map((dep, i) => (
                   <div key={i} className="grid grid-cols-[1.5fr_1fr_1fr_1fr] items-center p-5 border-b border-(--card-border) hover:bg-(--bg-base) transition-all duration-300 group">
                     
                     {/* Branch info */}
@@ -98,12 +101,17 @@ const ProjectOverview = () => {
                       <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="View Logs">
                          <FileText className="w-4 h-4" />
                       </Link>
-                      <a href={`https://${id || 'deployez-frontend'}.deployez.app`} target="_blank" rel="noreferrer" className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="Open URL">
+                      <a href={`https://${project?.url || id + '.deployez.app'}`} target="_blank" rel="noreferrer" className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="Open URL">
                          <ExternalLink className="w-4 h-4" />
                       </a>
                     </div>
                   </div>
                ))}
+               {(!project?.deployments || project.deployments.length === 0) && (
+                 <div className="p-8 text-center text-(--text-muted)">
+                   No deployments found. Trigger a new deploy to get started.
+                 </div>
+               )}
              </div>
           </div>
         )}
