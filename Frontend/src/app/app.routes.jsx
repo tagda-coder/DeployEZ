@@ -6,9 +6,8 @@ import Layout from "../features/shared/components/Layout";
 // Pages
 import Dashboard from "../features/dashboard/pages/Dashboard";
 import Analytics from "../features/dashboard/pages/Analytics";
-import Deploy from "../features/dashboard/pages/Deploy";
+import ProjectOverview from "../features/dashboard/pages/ProjectOverview";
 import DeployLogs from "../features/dashboard/pages/DeployLogs";
-import Environment from "../features/dashboard/pages/Environment";
 import Settings from "../features/dashboard/pages/Settings";
 import Auth from "../features/auth/pages/Auth";
 import LandingPage from "./pages/LandingPage";
@@ -28,11 +27,11 @@ export const router = createBrowserRouter([
         element: <Analytics />,
       },
       {
-        path: "deploy",
-        element: <Deploy />,
+        path: "project/:id",
+        element: <ProjectOverview />,
       },
       {
-        path: "deploy/:id",
+        path: "project/:projectId/deploy/:deployId",
         element: <DeployLogs />,
       },
       {

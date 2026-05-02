@@ -12,10 +12,10 @@ const Dashboard = () => {
           <p className="text-(--text-muted) mt-1">Manage your applications and deployments.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Link to="/deploy" className="group flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md">
+          <button onClick={() => alert('New Project Modal will open here')} className="group flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md">
             <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
             <span>New Project</span>
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -74,7 +74,7 @@ const Dashboard = () => {
             { name: "api-gateway-service", framework: "Node.js", time: "5h ago", branch: "production", url: "api.deployez.com" },
             { name: "marketing-site", framework: "Next.js", time: "1d ago", branch: "main", url: "deployez.com" },
           ].map((project, i) => (
-            <div key={i} className="group bg-(--card-bg) border border-(--card-border) rounded-2xl p-6 hover:shadow-lg hover:border-(--color-accent) transition-all duration-300 cursor-pointer flex flex-col gap-6">
+            <Link key={i} to={`/project/${project.name}`} className="group bg-(--card-bg) border border-(--card-border) rounded-2xl p-6 hover:shadow-lg hover:border-(--color-accent) transition-all duration-300 flex flex-col gap-6">
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-(--bg-base) border border-(--card-border) flex items-center justify-center">
@@ -101,11 +101,11 @@ const Dashboard = () => {
 
               <div className="flex items-center justify-between mt-2 pt-4 border-t border-(--sidebar-border)">
                 <span className="text-xs font-medium px-2.5 py-1 bg-(--bg-base) rounded-md text-(--text-muted)">{project.framework}</span>
-                <a href={`https://${project.url}`} target="_blank" rel="noreferrer" className="p-1.5 rounded-md hover:bg-(--bg-base) text-(--text-muted) hover:text-(--text-primary) transition-colors" onClick={(e) => e.stopPropagation()}>
+                <a href={`https://${project.url}`} target="_blank" rel="noreferrer" className="p-1.5 rounded-md hover:bg-(--bg-base) text-(--text-muted) hover:text-(--text-primary) transition-colors" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(`https://${project.url}`, '_blank'); }}>
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
