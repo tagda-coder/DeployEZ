@@ -1,8 +1,10 @@
-const express = require("express");
+import express from "express";
+import cookieParser from "cookie-parser";
+import connectDB from "./config/db.js";
+import authRoutes from "./routes/auth.route.js";
+import deploymentRoutes from "./routes/deployment.route.js";
+
 const app = express();
-const connectDB = require("./config/db");
-const cookieParser = require("cookie-parser");
-const authRoutes = require("./routes/auth.route");
 // ======== MIDDLEWARES =========
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -13,5 +15,6 @@ connectDB();
 
 // ======= ROUTES =========
 app.use("/api/auth", authRoutes);
+app.use("/api", deploymentRoutes);
 
-module.exports = app;
+export default app;

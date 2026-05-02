@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import authMiddleware from "../middlewares/auth.middleware.js";
+import { login, logout, signup } from "../controllers/auth.controller.js";
+
 const router = express.Router();
-const authMiddleware = require("../middlewares/auth.middleware");
-const { signup, login, logout } = require("../controllers/auth.controller");
 
 // @route    POST /api/auth/signup
 // @desc     Register new user
@@ -19,4 +20,4 @@ router.post("/login", login);
 router.post("/logout", authMiddleware, logout);
 
 // Export the router to be used in app.js
-module.exports = router;
+export default router;
