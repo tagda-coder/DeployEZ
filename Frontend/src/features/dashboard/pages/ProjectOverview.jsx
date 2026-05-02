@@ -68,9 +68,9 @@ const ProjectOverview = () => {
                     <div className="flex items-center gap-4">
                       <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] ${dep.status === 'Success' ? 'bg-(--status-success) text-(--status-success)' : dep.status === 'Building' ? 'bg-(--status-warning) text-(--status-warning) animate-pulse' : 'bg-(--status-error) text-(--status-error)'}`}></div>
                       <div className="flex flex-col">
-                        <span className="font-semibold text-(--text-primary)">
+                        <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="font-semibold text-(--text-primary) hover:text-(--color-accent) transition-colors">
                           {dep.branch}
-                        </span>
+                        </Link>
                       </div>
                     </div>
   
@@ -98,7 +98,7 @@ const ProjectOverview = () => {
                       <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="View Logs">
                          <FileText className="w-4 h-4" />
                       </Link>
-                      <a href="#" className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="Open URL">
+                      <a href={`https://${id || 'deployez-frontend'}.deployez.app`} target="_blank" rel="noreferrer" className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="Open URL">
                          <ExternalLink className="w-4 h-4" />
                       </a>
                     </div>

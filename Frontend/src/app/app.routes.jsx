@@ -8,7 +8,7 @@ import Dashboard from "../features/dashboard/pages/Dashboard";
 import Analytics from "../features/dashboard/pages/Analytics";
 import ProjectOverview from "../features/dashboard/pages/ProjectOverview";
 import DeployLogs from "../features/dashboard/pages/DeployLogs";
-import Settings from "../features/dashboard/pages/Settings";
+// import Settings from "../features/dashboard/pages/Settings";
 import Auth from "../features/auth/pages/Auth";
 import LandingPage from "./pages/LandingPage";
 import ErrorPage from "./pages/ErrorPage";
@@ -33,10 +33,6 @@ export const router = createBrowserRouter([
       {
         path: "project/:projectId/deploy/:deployId",
         element: <DeployLogs />,
-      },
-      {
-        path: "settings",
-        element: <Settings />,
       },
     ]
   },

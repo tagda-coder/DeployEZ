@@ -1,8 +1,7 @@
-import { Outlet, NavLink, Link } from "react-router";
+import { Outlet, NavLink } from "react-router";
 import {
   LayoutDashboard,
   BarChart2,
-  CloudUpload,
   PanelLeftClose,
   PanelLeft,
   LogOut,
@@ -10,11 +9,13 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import BackgroundPattern from "./BackgroundPattern";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeToggle } from "./ThemeToggle"; 
+import SettingsModal from "../../dashboard/pages/SettingsModal"
 
 const Layout = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const menuRef = useRef(null);
 
   // Close modal when clicking outside or pressing Escape
@@ -27,6 +28,7 @@ const Layout = () => {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
         setShowUserMenu(false);
+        setShowSettingsModal(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -40,7 +42,6 @@ const Layout = () => {
   const navItems = [
     { name: "Projects", path: "/", icon: LayoutDashboard },
     { name: "Analytics", path: "/analytics", icon: BarChart2 },
-    { name: "Workspace", path: "/settings", icon: SettingsIcon },
   ];
 
   return (
@@ -53,6 +54,7 @@ const Layout = () => {
           <div
             className={`flex items-center mb-10 px-5 whitespace-nowrap overflow-hidden transition-all duration-300`}
           >
+            
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
               className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--card-bg) rounded-xl transition-colors outline-none"
@@ -134,14 +136,16 @@ const Layout = () => {
                   <ThemeToggle style="p-1.5" />
                 </div>
 
-                <Link
-                  to="/settings"
-                  onClick={() => setShowUserMenu(false)}
+                <button
+                  onClick={() => {
+                    setShowSettingsModal(true);
+                    setShowUserMenu(false);
+                  }}
                   className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-base) rounded-lg transition-colors w-full text-left"
                 >
                   <SettingsIcon className="w-4 h-4" />
                   Account Settings
-                </Link>
+                </button>
 
                 <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors w-full text-left mt-1">
                   <LogOut className="w-4 h-4" />
@@ -160,6 +164,11 @@ const Layout = () => {
           <Outlet />
         </div>
       </main>
+
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <SettingsModal onClose={() => setShowSettingsModal(false)} />
+      )}
     </div>
   );
 };

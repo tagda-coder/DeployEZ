@@ -1,7 +1,11 @@
 import { Plus, Globe, ExternalLink, Activity, ArrowRight, Server } from "lucide-react";
 import { Link } from "react-router";
+import { useState } from "react";
+import NewProjectModal from "./NewProjectModal";
 
 const Dashboard = () => {
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+
   return (
     <div className="flex flex-col gap-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
       
@@ -12,12 +16,14 @@ const Dashboard = () => {
           <p className="text-(--text-muted) mt-1">Manage your applications and deployments.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => alert('New Project Modal will open here')} className="group flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md">
+          <button onClick={() => setShowNewProjectModal(true)} className="group flex items-center gap-2 px-5 py-2.5 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md">
             <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
             <span>New Project</span>
           </button>
         </div>
       </div>
+
+      {showNewProjectModal && <NewProjectModal onClose={() => setShowNewProjectModal(false)} />}
 
       {/* Stats/Status Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 w-full">
