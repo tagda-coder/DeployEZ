@@ -40,14 +40,6 @@ export const requestHandler = async (req, res) => {
 
     res.setHeader("Content-Type", getContentType(filePath));
 
-    if (filePath === "index.html") {
-      const htmlStr = await response.Body.transformToString();
-      const updatedHtml = htmlStr
-        .replace(/href="\//g, `href="/${id}/`)
-        .replace(/src="\//g, `src="/${id}/`);
-      return res.send(updatedHtml);
-    }
-
     response.Body.pipe(res);
   } catch (err) {
     if (err.name === "NoSuchKey" || err.Code === "NoSuchKey") {
