@@ -1,17 +1,26 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 // const BlackList = require("../models/blacklist.model");
-const redis = require("../config/cache");
+import redis from "../config/cache.js";
 const authMiddleware = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    // const authHeader = req.headers.authorization;
+    // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    //   return res.status(401).json({
+    //     Message: "No Token Provided",
+    //   });
+    // }
+
+    // const token = authHeader.split(" ")[1];
+
+    const token = req.cookies.token;
+    if (!token) {
       return res.status(401).json({
-        Message: "No Token Provided",
+        message: "Unauthorized",
+        success: false,
+        err: "Unauthorized",
       });
     }
 
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // // Check if token is blacklisted or not from BlackList Mongodb.
     // const isBlackListed = await BlackList.findOne({ token: token });
 
@@ -22,6 +31,7 @@ const authMiddleware = async (req, res, next) => {
         message: "Token is Invalidated. please login again.",
       });
     }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Now set this decoded part to your user request.
     req.user = decoded;
@@ -34,4 +44,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;
