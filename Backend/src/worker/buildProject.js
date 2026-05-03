@@ -25,16 +25,24 @@ export const buildProject = async (id) => {
   const projectPath = path.join(process.cwd(), "builds", id);
   const frontendPath = path.join(projectPath, "Frontend");
 
-  if (!fs.existsSync(frontendPath)) {
-    console.log("❌ No frontend found");
+  let targetPath;
+
+  if (fs.existsSync(path.join(frontendPath, "package.json"))) {
+    targetPath = frontendPath;
+  } else if (fs.existsSync(path.join(projectPath, "package.json"))) {
+    targetPath = projectPath;
+  } else {
+    console.log(
+      "⏭️ No package.json found. Skipping build step (assuming static HTML/CSS/JS site).",
+    );
     return;
   }
 
-  console.log("📦 Installing dependencies...");
-  await runCommand("npm install", frontendPath);
+  console.log(`📦 Installing dependencies in ${targetPath}...`);
+  await runCommand("npm install", targetPath);
 
-  console.log("🏗 Running build...");
-  await runCommand("npm run build", frontendPath);
+  console.log(`🏗 Running build in ${targetPath}...`);
+  await runCommand("npm run build", targetPath);
 
   console.log("✅ Build completed");
 };
