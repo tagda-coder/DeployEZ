@@ -1,0 +1,197 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Transitions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* LIGHT THEME */
+  /* Backgrounds */
+  --bg-base: #f9f8f3;
+  --card-bg: whitesmoke;
+  --input-bg: #fafafa;
+  --pattern-base-bg:
+    linear-gradient(to right, #44403c0d 1px, transparent 1px),
+    linear-gradient(to bottom, #44403c0d 1px, transparent 1px);
+
+  /* Colors */
+  --text-base: #171717;
+  --text-muted: #737373;
+  --text-muted-hover: #171717;
+  --text-primary: #171717;
+  --text-label: #404040;
+
+  /* Accents */
+  --color-accent: #92400e;
+  --color-icon: #a3a3a3;
+  --color-icon-active: #171717;
+  --color-input: #171717;
+  --color-placeholder: #a3a3a3;
+  --color-link: #171717;
+  --color-link-hover: #525252;
+
+  /* Borders */
+  --card-border: #e5e5e5;
+  --input-border: #e5e5e5;
+  --input-border-focus: #a3a3a3;
+
+  /* Buttons */
+  --btn-primary-bg: #171717;
+  --btn-primary-bg-hover: whitesmoke;
+  --btn-primary-text: whitesmoke;
+  --btn-primary-text-hover: #0a0a0a;
+  --btn-disabled-bg: #a3a3a3;
+
+  /* Sidebar */
+  --sidebar-bg: #f2f1ea;          /* Slightly darker than bg-base */
+  --sidebar-border: #e5e4da;
+  --sidebar-text: #404040;
+  --sidebar-text-active: #171717;
+
+  /* Status Colors (The "Diodes") */
+  --status-success: #0891b2;      /* Cyan/Teal from images */
+  --status-success-bg: #ecfeff;
+  --status-warning: #b45309;      /* Amber */
+  --status-warning-bg: #fffbeb;
+  --status-error: #be123c;        /* Crimson */
+  --status-error-bg: #fff1f2;
+
+  /* Data Visualization (Charts & Gauges) */
+  --chart-primary: #06b6d4;       /* Main Cyan line */
+  --chart-primary-glow: rgba(6, 182, 212, 0.2);
+  --chart-secondary: #eab308;     /* Yellow/Gold gauge */
+  --chart-grid: #e5e5e5;
+  --chart-area-gradient: linear-gradient(to bottom, rgba(6, 182, 212, 0.15), transparent);
+
+  /* Terminal & Code */
+  --terminal-bg: #171717;         /* Keep terminal dark even in light mode? Or go light? */
+  --terminal-text: #e5e5e5;
+  --terminal-prompt: #22d3ee;
+}
+
+.dark {
+  /* DARK THEME */
+  /* Backgrounds */
+  --bg-base: #111;
+  --card-bg: #111;
+  --input-bg: rgba(23, 23, 23, 0.5);
+  --pattern-base-bg:
+    linear-gradient(to right, #80808012 1px, transparent 1px),
+    linear-gradient(to bottom, #80808012 1px, transparent 1px);
+
+  /* Colors */
+  --text-base: #fafafa;
+  --text-muted: #a3a3a3;
+  --text-muted-hover: whitesmoke;
+  --text-primary: whitesmoke;
+  --text-label: #a3a3a3;
+
+  /* Accents */
+  --color-accent: #d4af37;
+  --color-icon: #737373;
+  --color-icon-active: #e5e5e5;
+  --color-input: whitesmoke;
+  --color-placeholder: #525252;
+  --color-link: whitesmoke;
+  --color-link-hover: #828282;
+
+  /* Borders */
+  --card-border: #262626;
+  --input-border: #262626;
+  --input-border-focus: #737373;
+
+  /* Buttons */
+  --btn-primary-bg: #f5f5f5;
+  --btn-primary-bg-hover: #262626;
+  --btn-primary-text: #0a0a0a;
+  --btn-primary-text-hover: whitesmoke;
+  --btn-disabled-bg: #525252;
+
+  /* Sidebar */
+  --sidebar-bg: #0a0a0a;
+  --sidebar-border: #1a1a1a;
+  --sidebar-text: #a3a3a3;
+  --sidebar-text-active: #ffffff;
+
+  /* Status Colors */
+  --status-success: #22d3ee;
+  --status-success-bg: rgba(34, 211, 238, 0.1);
+  --status-warning: #fbbf24;
+  --status-warning-bg: rgba(251, 191, 36, 0.1);
+  --status-error: #fb7185;
+  --status-error-bg: rgba(251, 113, 133, 0.1);
+
+  /* Data Visualization */
+  --chart-primary: #22d3ee;
+  --chart-primary-glow: rgba(34, 211, 238, 0.3);
+  --chart-secondary: #fbbf24;
+  --chart-grid: #262626;
+  --chart-area-gradient: linear-gradient(to bottom, rgba(34, 211, 238, 0.2), transparent);
+
+  /* Terminal & Code */
+  --terminal-bg: #050505;
+  --terminal-text: #d4d4d4;
+  --terminal-prompt: #22d3ee;
+}
+
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.active {
+  color: var(--color-accent);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-in.fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-in.slide-in-from-bottom-4 {
+  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-in.slide-in-from-right-8 {
+  animation: slideRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Global Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-border) transparent;
+}
