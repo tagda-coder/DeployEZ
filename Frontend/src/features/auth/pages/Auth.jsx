@@ -18,7 +18,6 @@ const Auth = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const cardRef = useRef(null);
 
-  // Form state
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -33,12 +32,12 @@ const Auth = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ── Register ──────────────────────────────────────────────────────────────
+  // Backend: POST /api/auth/signup → sets httpOnly cookie + returns { Message, user }
+  // No email verification step on backend → redirect to dashboard immediately.
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     const result = await handleRegister({
@@ -51,10 +50,18 @@ const Auth = () => {
     }
   };
 
+  // ── Login ─────────────────────────────────────────────────────────────────
+  // Backend: POST /api/auth/login accepts email OR username + password.
+  // The email input on the login form doubles as email-or-username for simplicity.
+  // If the user types a value without "@" we treat it as username.
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    const rawInput = formData.email.trim();
+    const isEmail = rawInput.includes("@");
+
     const result = await handleLogin({
-      email: formData.email,
+      email: isEmail ? rawInput : undefined,
+      username: !isEmail ? rawInput : undefined,
       password: formData.password,
     });
 
@@ -65,7 +72,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-(--bg-base) text-(--text-base) font-sans selection:bg-neutral-500/30 overflow-hidden relative px-4 transition-colors duration-700">
-      {/* Background Pattern */}
       <BackgroundPattern />
 
       {/* Top Controls */}
@@ -73,20 +79,19 @@ const Auth = () => {
         onClick={() => navigate("/landing")}
         className="absolute top-6 left-6 z-50 flex items-center gap-2 text-sm font-medium text-(--text-muted) hover:text-(--text-muted-hover) transition-colors group cursor-pointer"
       >
-        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Back to Landing Page
       </button>
+      <ThemeToggle style="absolute top-6 right-6" />
 
-      <ThemeToggle style={"absolute top-6 right-6"} />
-
-      {/* Main Auth Card */}
+      {/* Card */}
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
         className="w-full max-w-md relative z-10 bg-(--card-bg) border border-(--card-border) rounded-3xl p-8 shadow-2xl overflow-hidden animate-[fadeIn_0.5s_ease-out]"
       >
         <div
-          className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100 dark:opacity-100"
+          className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 dark:opacity-100"
           style={{
             background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.03), transparent 40%)`,
           }}
@@ -102,8 +107,8 @@ const Auth = () => {
             </h2>
             <p className="text-(--text-muted) font-light text-center">
               {isLogin
-                ? "Enter your details to access your workspace."
-                : "Start shipping better videos faster."}
+                ? "Enter your email (or username) to access your workspace."
+                : "Start deploying your projects in seconds."}
             </p>
           </div>
 
@@ -111,12 +116,13 @@ const Auth = () => {
             className="space-y-4"
             onSubmit={isLogin ? handleLoginSubmit : handleRegisterSubmit}
           >
+            {/* Username — signup only */}
             <div
               className={`overflow-hidden transition-all duration-500 ease-in-out ${isLogin ? "max-h-0 opacity-0" : "max-h-25 opacity-100"}`}
             >
               <div className="space-y-1.5 pb-2">
                 <label className="text-sm font-medium text-(--text-label) ml-1">
-                  Full Name
+                  Username
                 </label>
                 <div className="relative group">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--color-icon) group-focus-within:text-(--color-icon-active) transition-colors" />
@@ -124,7 +130,7 @@ const Auth = () => {
                     required={!isLogin}
                     type="text"
                     name="username"
-                    placeholder="Jane Doe"
+                    placeholder="janedoe"
                     value={formData.username}
                     onChange={handleInputChange}
                     className="w-full bg-(--input-bg) border border-(--input-border) rounded-xl py-3 pl-12 pr-4 text-(--color-input) placeholder:text-(--color-placeholder) focus:outline-none focus:border-(--input-border-focus) transition-all"
@@ -133,17 +139,18 @@ const Auth = () => {
               </div>
             </div>
 
+            {/* Email / username (login) */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-(--text-label) ml-1">
-                Email Address
+                {isLogin ? "Email or Username" : "Email Address"}
               </label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--color-icon) group-focus-within:text-(--color-icon-active) transition-colors" />
                 <input
                   required
-                  type="email"
+                  type={isLogin ? "text" : "email"}
                   name="email"
-                  placeholder="you@creator.com"
+                  placeholder={isLogin ? "you@example.com or janedoe" : "you@example.com"}
                   value={formData.email}
                   onChange={handleInputChange}
                   className="w-full bg-(--input-bg) border border-(--input-border) rounded-xl py-3 pl-12 pr-4 text-(--color-input) placeholder:text-(--color-placeholder) focus:outline-none focus:border-(--input-border-focus) transition-all"
@@ -151,22 +158,13 @@ const Auth = () => {
               </div>
             </div>
 
+            {/* Password */}
             <div className="space-y-1.5">
-              <div className="flex justify-between items-center ml-1">
-                <label className="text-sm font-medium text-(--text-label)">
-                  Password
-                </label>
-                {isLogin && (
-                  <a
-                    href="#"
-                    className="text-xs text-(--text-muted) hover:text-(--text-muted-hover) transition-colors"
-                  >
-                    Forgot password?
-                  </a>
-                )}
-              </div>
+              <label className="text-sm font-medium text-(--text-label) ml-1">
+                Password
+              </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--color-icon)group-focus-within:text-(--color-icon-active) transition-colors" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--color-icon) group-focus-within:text-(--color-icon-active) transition-colors" />
                 <input
                   required
                   type={showPassword ? "text" : "password"}
@@ -174,18 +172,14 @@ const Auth = () => {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full bg-(--input-bg) border border-(--input-border) rounded-xl py-3 pl-12 pr-4 text-(--color-input) placeholder:text-(--color-placeholder) focus:outline-none focus:border-(--input-border-focus) transition-all"
+                  className="w-full bg-(--input-bg) border border-(--input-border) rounded-xl py-3 pl-12 pr-12 text-(--color-input) placeholder:text-(--color-placeholder) focus:outline-none focus:border-(--input-border-focus) transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-(--color-icon) hover:text-(--color-icon-active) transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -207,7 +201,7 @@ const Auth = () => {
             </div>
           </form>
 
-          <div className="mt-8 text-center text-sm text-neutral-500 dark:text-neutral-500">
+          <div className="mt-8 text-center text-sm text-neutral-500">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               type="button"

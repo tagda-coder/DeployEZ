@@ -85,6 +85,7 @@ const simulateDeployment = async (id, repoUrl) => {
 
       try {
         await publisher.lPush("build_queue", id.toString());
+        await publisher.hSet("status", id, "uploaded");
         deployment.logs.push("Build queued successfully 🚀");
       } catch (err) {
         deployment.logs.push("Queue push failed ❌");
@@ -122,7 +123,7 @@ const simulateDeployment = async (id, repoUrl) => {
     if (!deployment || deployment.status === "failed") return;
 
     deployment.status = "success";
-    deployment.deployUrl = `https://${id}.deployez.app`;
+    deployment.deployUrl = `http://localhost:3000/${id}`;
     deployment.logs.push("Deployment successful 🚀");
 
     await deployment.save();
@@ -153,7 +154,14 @@ const getAllFiles = (dirPath) => {
 };
 
 export const getDeploymentStatus = async (id) => {
-  return await Deployment.findById(id);
+  const deployment = await Deployment.findById(id);
+  if (deployment) {
+    const redisStatus = await publisher.hGet("status", id.toString());
+    if (redisStatus) {
+      deployment.status = redisStatus;
+    }
+  }
+  return deployment;
 };
 
 export const getDeploymentLogs = async (id) => {
