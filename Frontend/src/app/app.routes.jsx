@@ -53,8 +53,4 @@ export const router = createBrowserRouter([
       <Auth />
       </Guest>
   },
-  {
-    path: "*",
-    element: <ErrorPage />,
-  },
 ]);
