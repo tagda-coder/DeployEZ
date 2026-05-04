@@ -20,4 +20,4 @@ router.post("/login", login);
 router.post("/logout", authMiddleware, logout);
 
 // Export the router to be used in app.js
-module.exports = router
+export default router;
