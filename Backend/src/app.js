@@ -6,15 +6,15 @@ import deploymentRoutes from "./routes/deployment.route.js";
 import requestRoutes from "./routes/request.route.js";
 import morgan from "morgan";
 import cors from "cors";
+import path from "path";
 
 const app = express();
-// ======== MIDDLEWARES =========
-// Enable CORS for all routes (MUST be defined before routes)
+
 app.use(cors({
   origin: [
     "http://localhost:5173", 
     "http://127.0.0.1:5173",
-    "https://deployez.onrender.com", // ✅ yahi kaafi hai
+    "https://deployez.onrender.com", 
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
@@ -28,9 +28,16 @@ app.use(morgan("dev"));
 // ======== CONNECT TO DATABASE ========
 connectDB();
 
-// ======= ROUTES =========
+// ======= API ROUTES =========
 app.use("/api/auth", authRoutes);
 app.use("/api", deploymentRoutes);
-app.use("/", requestRoutes);
+app.use("/api", requestRoutes);
+
+// ======= FRONTEND =========
+app.use(express.static("./public"));
+
+app.get(/(.*)/, (req, res) => {                          // ✅ Fixed
+  res.sendFile(path.resolve("public/index.html"));
+});
 
 export default app;
