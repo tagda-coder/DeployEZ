@@ -105,9 +105,17 @@ const Dashboard = () => {
 
               <div className="flex items-center justify-between mt-2 pt-4 border-t border-(--sidebar-border)">
                 <span className="text-xs font-medium px-2.5 py-1 bg-(--bg-base) rounded-md text-(--text-muted)">{project.framework}</span>
-                <a href={`https://${project.url}`} target="_blank" rel="noreferrer" className="p-1.5 rounded-md hover:bg-(--bg-base) text-(--text-muted) hover:text-(--text-primary) transition-colors" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(`https://${project.url}`, '_blank'); }}>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
+                {project.deployments?.[0]?.id && (
+                  <a 
+                    href={`${import.meta.env.VITE_BACKEND_URL}/${project.deployments[0].id}`} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="p-1.5 rounded-md hover:bg-(--bg-base) text-(--text-muted) hover:text-(--text-primary) transition-colors" 
+                    onClick={(e) => { e.stopPropagation(); }}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
               </div>
             </Link>
           ))}

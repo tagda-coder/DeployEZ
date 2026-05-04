@@ -102,7 +102,7 @@ const ProjectOverview = () => {
                         <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="p-1.5 bg-(--bg-base) border border-(--card-border) rounded-md shadow-sm text-(--text-muted) hover:text-(--text-primary)">
                            <FileText className="w-3.5 h-3.5" />
                         </Link>
-                        <a href={`https://${project?.url || id + '.deployez.app'}`} target="_blank" rel="noreferrer" className="p-1.5 bg-(--bg-base) border border-(--card-border) rounded-md shadow-sm text-(--text-muted) hover:text-(--text-primary)">
+                        <a href={`${import.meta.env.VITE_BACKEND_URL}/${dep.id}`} target="_blank" rel="noreferrer" className="p-1.5 bg-(--bg-base) border border-(--card-border) rounded-md shadow-sm text-(--text-muted) hover:text-(--text-primary)">
                            <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       </div>
@@ -146,7 +146,7 @@ const ProjectOverview = () => {
                       <Link to={`/project/${id || 'deployez-frontend'}/deploy/${dep.id}`} className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="View Logs">
                          <FileText className="w-4 h-4" />
                       </Link>
-                      <a href={`https://${project?.url || id + '.deployez.app'}`} target="_blank" rel="noreferrer" className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="Open URL">
+                      <a href={`${import.meta.env.VITE_BACKEND_URL}/${dep.id}`} target="_blank" rel="noreferrer" className="p-2 bg-(--bg-base) border border-(--card-border) rounded-lg hover:border-(--color-accent) hover:text-(--color-accent) transition-colors shadow-sm text-(--text-muted)" title="Open URL">
                          <ExternalLink className="w-4 h-4" />
                       </a>
                     </div>
