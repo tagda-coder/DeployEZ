@@ -46,9 +46,8 @@ const Auth = () => {
       email: formData.email,
       password: formData.password,
     });
-    if (result?.success) {
-      // setShowVerifyModal(true);
-      return;
+    if (result?.user) {
+      navigate("/");
     }
   };
 
@@ -59,9 +58,8 @@ const Auth = () => {
       password: formData.password,
     });
 
-    if (result?.success) {
-      // await redirectAfterLogin();
-      return;
+    if (result?.user) {
+      navigate("/");
     }
   };
 

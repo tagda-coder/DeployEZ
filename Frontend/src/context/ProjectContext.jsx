@@ -1,94 +1,105 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import {
+  getDeployments,
+  deployProject,
+} from "../features/dashboard/service/deploy.api";
 
 const ProjectContext = createContext();
 
 export const useProjects = () => useContext(ProjectContext);
 
 export const ProjectProvider = ({ children }) => {
-  const [projects, setProjects] = useState([
-    { 
-      id: "deployez-frontend", 
-      name: "deployez-frontend", 
-      framework: "React", 
-      time: "2h ago", 
-      branch: "main", 
-      url: "deployez-frontend.deployez.app",
-      deployments: [
-        { id: "dep_982bfe12", time: "2 mins ago", status: "Success", branch: "main", commit: "a1b2c3d", commitMsg: "Update UI for Deployments" },
-        { id: "dep_102xyz88", time: "1 day ago", status: "Failed", branch: "main", commit: "8i9j0k1", commitMsg: "Fix styling issues" },
-      ]
-    },
-    { 
-      id: "api-gateway-service", 
-      name: "api-gateway-service", 
-      framework: "Node.js", 
-      time: "5h ago", 
-      branch: "production", 
-      url: "api-gateway-service.deployez.app",
-      deployments: [
-        { id: "dep_447abc99", time: "5 hours ago", status: "Success", branch: "production", commit: "4f5g6h7", commitMsg: "Update gateway routing" },
-      ]
-    },
-    { 
-      id: "marketing-site", 
-      name: "marketing-site", 
-      framework: "Next.js", 
-      time: "1d ago", 
-      branch: "main", 
-      url: "marketing-site.deployez.app",
-      deployments: [
-        { id: "dep_777abc99", time: "1 day ago", status: "Success", branch: "main", commit: "9g8f7e6", commitMsg: "Initial commit" },
-      ]
-    },
-  ]);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const addProject = (projectData) => {
-    const newProject = {
-      id: projectData.name.toLowerCase().replace(/\s+/g, '-'),
-      name: projectData.name,
-      framework: projectData.framework || "React",
-      time: "Just now",
-      branch: projectData.branch || "main",
-      url: `${projectData.name.toLowerCase().replace(/\s+/g, '-')}.deployez.app`,
-      deployments: [
-        {
-          id: `dep_${Math.random().toString(36).substring(2, 10)}`,
-          time: "Just now",
-          status: "Building",
-          branch: projectData.branch || "main",
-          commit: Math.random().toString(36).substring(2, 9),
-          commitMsg: "Initial deployment",
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const data = await getDeployments();
+
+      // Transform backend map to grouped project array format
+      const grouped = {};
+      data.deployments.forEach((dep) => {
+        const pName = dep.projectName || "Unknown Project";
+        if (!grouped[pName]) {
+          grouped[pName] = {
+            id: pName,
+            name: pName,
+            framework: "React", // Hardcoded for now
+            time: new Date(dep.createdAt).toLocaleDateString(),
+            branch: "main",
+            url: `${pName.toLowerCase().replace(/\s+/g, "-")}.deployez.app`,
+            deployments: [],
+          };
         }
-      ]
-    };
-    setProjects(prev => [newProject, ...prev]);
-    return newProject;
+
+        let statusString = "Building";
+        if (dep.status === "success") statusString = "Success";
+        if (dep.status === "failed") statusString = "Failed";
+
+        grouped[pName].deployments.push({
+          id: dep._id,
+          dbId: dep._id,
+          time: new Date(dep.createdAt).toLocaleString(),
+          status: statusString,
+          branch: "main",
+          commit: "manual",
+          commitMsg: "Deployment",
+          repoUrl: dep.repoUrl,
+        });
+      });
+
+      setProjects(Object.values(grouped));
+    } catch (error) {
+      console.error("Failed to fetch projects", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addDeployment = (projectId) => {
-    setProjects(prev => prev.map(p => {
-      if (p.id === projectId) {
-        return {
-          ...p,
-          deployments: [
-            {
-              id: `dep_${Math.random().toString(36).substring(2, 10)}`,
-              time: "Just now",
-              status: "Building",
-              branch: p.branch,
-              commit: Math.random().toString(36).substring(2, 9),
-              commitMsg: "Manual trigger deployment",
-            },
-            ...p.deployments
-          ]
-        };
-      }
-      return p;
-    }));
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const addProject = async (projectData) => {
+    try {
+      const res = await deployProject({
+        projectName: projectData.name,
+        repoUrl: projectData.repoUrl,
+      });
+      // Re-fetch everything after a successful trigger
+      await fetchProjects();
+      return { id: projectData.name, ...res };
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+  const addDeployment = async (projectId) => {
+    // Project ID here is the project name
+    const project = projects.find((p) => p.id === projectId);
+    if (!project || !project.deployments.length) return;
+
+    const repoUrl =
+      project.deployments[0].repoUrl ||
+      "https://github.com/mayank-user/deployez-frontend";
+
+    try {
+      await deployProject({
+        projectName: project.name,
+        repoUrl: repoUrl,
+      });
+      await fetchProjects();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <ProjectContext.Provider value={{ projects, addProject, addDeployment }}>
+    <ProjectContext.Provider
+      value={{ projects, loading, addProject, addDeployment, fetchProjects }}
+    >
       {children}
     </ProjectContext.Provider>
   );
