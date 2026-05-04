@@ -96,7 +96,7 @@ const runDeployment = async (id, repoUrl) => {
   // The worker will mark Redis status → "success" when build+upload finishes.
   // We also mark MongoDB as success here so polling sees it even if worker
   // is slow. Worker will overwrite with its own final status via Redis.
-  const deployUrl = `${process.env.DEPLOY_BASE_URL || "http://localhost:3000"}/${id}`;
+  const deployUrl = `${process.env.DEPLOY_BASE_URL || "https://deployez-1.onrender.com/"}/${id}`;
   await addLog(id, `Deployment successful 🚀 → ${deployUrl}`, "success", deployUrl);
 };
 
