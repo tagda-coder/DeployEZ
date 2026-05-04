@@ -22,7 +22,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "start": "node server.js",
+    "start": "concurrently \"node server.js\" \"node src/worker/worker.js\"",
     "dev": "nodemon server.js",
     "worker:dev": "nodemon src/worker/worker.js",
     "worker": "node src/worker/worker.js"
@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.4",
     "globals": "^17.5.0"
   },
