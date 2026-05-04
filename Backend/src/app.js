@@ -14,7 +14,7 @@ app.use(cors({
   origin: [
     "http://localhost:5173", 
     "http://127.0.0.1:5173",
-    "https://deployez.onrender.com", 
+    "https://deployez-1.onrender.com", 
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
