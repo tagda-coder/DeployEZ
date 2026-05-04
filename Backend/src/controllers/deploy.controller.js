@@ -62,3 +62,24 @@ export const getLogsController = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/**
+ * @route GET /:id
+ * @desc Redirect to deployed URL
+ * @access Public
+ */
+export const getDeploymentController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deployment = await getDeploymentStatus(id); // reuse existing service
+    if (!deployment) {
+      return res.status(404).json({ error: "Deployment not found" });
+    }
+    if (!deployment.deployUrl) {
+      return res.status(400).json({ error: "Deployment not ready yet", status: deployment.status });
+    }
+    res.redirect(deployment.deployUrl); // ✅ correct field name
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
