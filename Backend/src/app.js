@@ -11,7 +11,11 @@ const app = express();
 // ======== MIDDLEWARES =========
 // Enable CORS for all routes (MUST be defined before routes)
 app.use(cors({
-  origin:["http://localhost:5173", "http://127.0.0.1:5173"],
+  origin: [
+    "http://localhost:5173", 
+    "http://127.0.0.1:5173",
+    "https://deployez.onrender.com", // ✅ yahi kaafi hai
+  ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 }));
