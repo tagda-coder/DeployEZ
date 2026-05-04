@@ -28,7 +28,7 @@ export const downloadS3Folder = async (prefix, id) => {
     new ListObjectsV2Command({
       Bucket: "deployez",
       Prefix: prefix,
-    })
+    }),
   );
 
   const files = data.Contents || [];
@@ -47,7 +47,7 @@ export const downloadS3Folder = async (prefix, id) => {
       new GetObjectCommand({
         Bucket: "deployez",
         Key: file.Key,
-      })
+      }),
     );
 
     const stream = response.Body;
