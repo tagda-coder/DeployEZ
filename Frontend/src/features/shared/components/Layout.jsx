@@ -10,10 +10,12 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import BackgroundPattern from "./BackgroundPattern";
-import { ThemeToggle } from "./ThemeToggle"; 
-import SettingsModal from "../../dashboard/pages/SettingsModal"
+import { ThemeToggle } from "./ThemeToggle";
+import SettingsModal from "../../dashboard/pages/SettingsModal";
+import { useAuth } from "../../auth/hook/useAuth";
 
 const Layout = () => {
+  const { handleLogout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -24,11 +26,17 @@ const Layout = () => {
   // Close modal when clicking outside or pressing Escape
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const clickedOutsideMobile = mobileMenuRef.current && !mobileMenuRef.current.contains(event.target);
-      const clickedOutsideDesktop = desktopMenuRef.current && !desktopMenuRef.current.contains(event.target);
-      
-      if ((!mobileMenuRef.current || clickedOutsideMobile) && (!desktopMenuRef.current || clickedOutsideDesktop)) {
-        if (!event.target.closest('.user-menu-trigger')) {
+      const clickedOutsideMobile =
+        mobileMenuRef.current && !mobileMenuRef.current.contains(event.target);
+      const clickedOutsideDesktop =
+        desktopMenuRef.current &&
+        !desktopMenuRef.current.contains(event.target);
+
+      if (
+        (!mobileMenuRef.current || clickedOutsideMobile) &&
+        (!desktopMenuRef.current || clickedOutsideDesktop)
+      ) {
+        if (!event.target.closest(".user-menu-trigger")) {
           setShowUserMenu(false);
         }
       }
@@ -54,7 +62,6 @@ const Layout = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-(--bg-base) text-(--text-base) overflow-hidden relative">
-      
       {/* Mobile Top Nav */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-(--sidebar-border) bg-(--sidebar-bg) z-30 shrink-0">
         <div className="flex items-center gap-3">
@@ -68,7 +75,7 @@ const Layout = () => {
             DeployEZ
           </span>
         </div>
-        
+
         {/* Mobile User Profile */}
         <div className="relative">
           <button
@@ -83,10 +90,14 @@ const Layout = () => {
               className="absolute top-full right-0 mt-2 w-56 bg-(--card-bg) border border-(--card-border) rounded-xl shadow-lg flex flex-col p-2 animate-in fade-in slide-in-from-top-2 z-50"
             >
               <div className="px-3 py-2 border-b border-(--card-border) mb-2">
-                <p className="text-sm font-semibold text-(--text-primary)">user@deployez.com</p>
+                <p className="text-sm font-semibold text-(--text-primary)">
+                  user@deployez.com
+                </p>
               </div>
               <div className="flex items-center justify-between px-3 py-2 hover:bg-(--bg-base) rounded-lg transition-colors cursor-default">
-                <span className="text-sm font-medium text-(--text-muted)">Theme</span>
+                <span className="text-sm font-medium text-(--text-muted)">
+                  Theme
+                </span>
                 <ThemeToggle style="p-1.5" />
               </div>
               <button
@@ -99,7 +110,10 @@ const Layout = () => {
                 <SettingsIcon className="w-4 h-4" />
                 Account Settings
               </button>
-              <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors w-full text-left mt-1">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors w-full text-left mt-1"
+              >
                 <LogOut className="w-4 h-4" />
                 Log out
               </button>
@@ -110,8 +124,8 @@ const Layout = () => {
 
       {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -143,9 +157,9 @@ const Layout = () => {
                 </span>
               )}
             </div>
-            
+
             {/* Mobile Close Button inside sidebar */}
-            <button 
+            <button
               className="md:hidden p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--card-bg) rounded-xl"
               onClick={() => setIsMobileOpen(false)}
             >
@@ -229,7 +243,10 @@ const Layout = () => {
                   Account Settings
                 </button>
 
-                <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors w-full text-left mt-1">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-lg transition-colors w-full text-left mt-1"
+                >
                   <LogOut className="w-4 h-4" />
                   Log out
                 </button>

@@ -1,5 +1,4 @@
-import { createContext, useEffect, useState } from "react";
-import { getMe } from "./service/auth.api";
+import { createContext, useState } from "react";
 
 export const AuthContext = createContext();
 
@@ -9,21 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [actionType, setActionType] = useState(null);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    async function initAuth() {
-      try {
-        const data = await getMe();
-        setUser(data.user);
-      } catch (err) {
-        setUser(null);
-      } finally {
-        setAuthLoading(false);
-      }
-    }
-
-    initAuth();
-  }, []);
-
   return (
     <AuthContext.Provider
       value={{
@@ -32,6 +16,7 @@ export const AuthProvider = ({ children }) => {
         actionType,
         setActionType,
         authLoading,
+        setAuthLoading,
         user,
         setUser,
       }}

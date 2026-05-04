@@ -1,5 +1,6 @@
 import { ToastContainer, Zoom } from "react-toastify"; 
 import { router } from "./app.routes"; 
+import { useEffect } from "react";
 
 // Providers
 import { RouterProvider } from "react-router";
@@ -7,17 +8,14 @@ import { RouterProvider } from "react-router";
 // styles
 import "./app.css";
 import { useTheme } from "../features/shared/hook/useTheme";
+import { useAuth } from "../features/auth/hook/useAuth";
 
 function App() {
-  // const { handleGetMe } = useAuth()
+  const { handleInitAuth } = useAuth();
 
-  // const user = useSelector(state => state.auth.user)
-
-  // console.log(user)
-
-  // useEffect(() => {
-  //   handleGetMe()
-  // }, [])
+  useEffect(() => {
+    handleInitAuth();
+  }, []);
 
   const { theme } = useTheme();
 

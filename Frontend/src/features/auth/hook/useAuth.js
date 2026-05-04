@@ -17,6 +17,7 @@ export const useAuth = () => {
   const {
     actionLoading,
     authLoading,
+    setAuthLoading,
     actionType,
     setActionType,
     setActionLoading,
@@ -29,6 +30,7 @@ export const useAuth = () => {
     try {
       const data = await register({ email, username, password });
       toast.success(data.message);
+      setUser(data.user);
       sessionStorage.setItem("pendingEmail", email);
 
       return data;
@@ -95,6 +97,18 @@ export const useAuth = () => {
     }
   }
 
+  async function handleInitAuth() {
+    try {
+      const data = await getMe();
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setAuthLoading(false);
+    }
+  }
+
   async function handleVerifyEmail({ email, code }) {
     setActionLoading(true);
     try {
@@ -118,7 +132,7 @@ export const useAuth = () => {
       toast.success(data.message);
       return data;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong"); 
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setActionLoading(false);
       setActionType(null);
@@ -135,6 +149,7 @@ export const useAuth = () => {
     handleLogout,
     handleDeleteAccount,
     handleGetMe,
+    handleInitAuth,
     handleVerifyEmail,
     handleResendVerification,
   };

@@ -12,6 +12,7 @@
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.0",
+    "morgan": "^1.10.1",
     "nodemon": "^3.1.14",
     "redis": "^5.12.1",
     "simple-git": "^3.36.0"
