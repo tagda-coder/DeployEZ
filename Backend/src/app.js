@@ -7,6 +7,7 @@ import requestRoutes from "./routes/request.route.js";
 import morgan from "morgan";
 import cors from "cors";
 import path from "path";
+import { getDeploymentController } from "./controllers/deploy.controller.js";
 
 const app = express();
 
@@ -28,15 +29,18 @@ app.use(morgan("dev"));
 // ======== CONNECT TO DATABASE ========
 connectDB();
 
+// ======= STATIC FILES (before routes) =========
+app.use(express.static("./public"));
+
 // ======= API ROUTES =========
 app.use("/api/auth", authRoutes);
 app.use("/api", deploymentRoutes);
 app.use("/api", requestRoutes);
 
-// ======= FRONTEND =========
-app.use(express.static("./public"));
+// ======= DEPLOYMENT REDIRECT =========
+app.get("/:id", getDeploymentController);
 
-app.get(/(.*)/, (req, res) => {                          // ✅ Fixed
+app.get(/(.*)/, (req, res) => {                         
   res.sendFile(path.resolve("public/index.html"));
 });
 
