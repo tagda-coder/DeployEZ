@@ -14,11 +14,11 @@ const publisher = createClient({
 });
 
 publisher.on("error", (err) => console.error("Redis Error:", err));
-publisher.on("connect", () => {
-  console.log("Redis connected properly ✅");
-});
+publisher.on("connect", () => console.log("Redis connected properly ✅"));
 
 await publisher.connect();
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const createDeployment = async (repoUrl) => {
   const deployment = await Deployment.create({
@@ -27,122 +27,97 @@ export const createDeployment = async (repoUrl) => {
     logs: ["Deployment queued..."],
   });
 
-  const id = deployment._id;
-
-  simulateDeployment(id, repoUrl);
+  // Run async — don't block the HTTP response
+  runDeployment(deployment._id, repoUrl).catch((err) =>
+    console.error("Deployment pipeline error:", err),
+  );
 
   return deployment;
 };
 
-const simulateDeployment = async (id, repoUrl) => {
-  // console.log(process.cwd())
+// ── Main pipeline (sequential, no racing setTimeouts) ────────────────────────
+const runDeployment = async (id, repoUrl) => {
   const deployPath = path.join(process.cwd(), "deployments", id.toString());
 
-  setTimeout(async () => {
-    const deployment = await Deployment.findById(id);
-    if (!deployment) return;
+  // ── 1. Mark deploying + clone ─────────────────────────────────────────────
+  await addLog(id, "Cloning repository from GitHub...", "deploying");
 
-    deployment.status = "deploying";
-    deployment.logs.push("Cloning repository from GitHub...");
+  try {
+    if (!fs.existsSync(deployPath)) {
+      fs.mkdirSync(deployPath, { recursive: true });
+    }
+    await simpleGit().clone(repoUrl, deployPath);
+    await addLog(id, "Repository cloned successfully ✅");
+    await addLog(id, `Stored at: ${deployPath}`);
+  } catch (cloneErr) {
+    await addLog(id, "Clone failed ❌", "failed");
+    await addLog(id, cloneErr.message);
+    return;
+  }
 
-    try {
-      if (!fs.existsSync(deployPath)) {
-        fs.mkdirSync(deployPath, { recursive: true });
-      }
+  // ── 2. Upload repo files to S3 ────────────────────────────────────────────
+  try {
+    const files = getAllFiles(deployPath);
+    await addLog(id, `Total files found: ${files.length}`);
+    await addLog(id, "Uploading repository to storage...");
 
-      // CLONE STEP
-      await simpleGit().clone(repoUrl, deployPath);
-
-      deployment.logs.push("Repository cloned successfully ✅");
-      deployment.logs.push(`Stored at: ${deployPath}`);
-    } catch (cloneErr) {
-      deployment.status = "failed";
-      deployment.logs.push("Clone failed ❌");
-      deployment.logs.push(cloneErr.message);
-      await deployment.save();
-      return;
+    for (const file of files) {
+      const relativePath = path
+        .relative(deployPath, file)
+        .split(path.sep)
+        .join("/");
+      await uploadFile(`deployments/${id}/${relativePath}`, file);
     }
 
-    // FILE PROCESS + UPLOAD (separate try)
-    try {
-      const files = getAllFiles(deployPath);
-      deployment.logs.push(`Total files: ${files.length}`);
+    await addLog(id, "Uploaded to storage ✅");
+  } catch (uploadErr) {
+    await addLog(id, "Upload failed ❌", "failed");
+    await addLog(id, uploadErr.message);
+    return;
+  }
 
-      for (const file of files) {
-        // Windows uses backslashes for file paths, but S3 requires forward slashes for keys
-        const relativePath = path
-          .relative(deployPath, file)
-          .split(path.sep)
-          .join("/");
-        // console.log(relativePath);
-        await uploadFile(`deployments/${id}/${relativePath}`, file);
-      }
+  // ── 3. Push to build queue ────────────────────────────────────────────────
+  try {
+    await addLog(id, "Installing dependencies...");
+    await addLog(id, "Building application...");
+    await addLog(id, "Pushing build job to queue...");
 
-      deployment.logs.push("Uploaded to storage ✅");
+    await publisher.lPush("build_queue", id.toString());
+    await publisher.hSet("status", id.toString(), "uploaded");
 
-      // 🔥 queue step
-      deployment.logs.push("Pushing build job to queue...");
+    await addLog(id, "Build queued successfully 🚀");
+  } catch (queueErr) {
+    await addLog(id, "Queue push failed ❌", "failed");
+    await addLog(id, queueErr.message);
+    return;
+  }
 
-      try {
-        await publisher.lPush("build_queue", id.toString());
-        await publisher.hSet("status", id, "uploaded");
-        deployment.logs.push("Build queued successfully 🚀");
-      } catch (err) {
-        deployment.logs.push("Queue push failed ❌");
-        deployment.logs.push(err.message);
-      }
-    } catch (uploadErr) {
-      deployment.status = "failed";
-      deployment.logs.push("Upload failed ❌");
-      deployment.logs.push(uploadErr.message);
-      await deployment.save();
-      return;
-    }
-
-    await deployment.save();
-  }, 2000);
-
-  setTimeout(async () => {
-    const deployment = await Deployment.findById(id);
-    if (!deployment || deployment.status === "failed") return;
-
-    deployment.logs.push("Installing dependencies...");
-    await deployment.save();
-  }, 4000);
-
-  setTimeout(async () => {
-    const deployment = await Deployment.findById(id);
-    if (!deployment || deployment.status === "failed") return;
-
-    deployment.logs.push("Building application...");
-    await deployment.save();
-  }, 6000);
-
-  setTimeout(async () => {
-    const deployment = await Deployment.findById(id);
-    if (!deployment || deployment.status === "failed") return;
-
-    deployment.status = "success";
-    deployment.deployUrl = `http://localhost:3000/${id}`;
-    deployment.logs.push("Deployment successful 🚀");
-
-    await deployment.save();
-  }, 8000);
+  // ── 4. Mark success ───────────────────────────────────────────────────────
+  // The worker will mark Redis status → "success" when build+upload finishes.
+  // We also mark MongoDB as success here so polling sees it even if worker
+  // is slow. Worker will overwrite with its own final status via Redis.
+  const deployUrl = `${process.env.DEPLOY_BASE_URL || "http://localhost:3000"}/${id}`;
+  await addLog(id, `Deployment successful 🚀 → ${deployUrl}`, "success", deployUrl);
 };
 
-// 🔥 helper function
+// ── Helper: push a log line + optional status update in one DB write ─────────
+const addLog = async (id, message, newStatus = null, deployUrl = null) => {
+  const update = { $push: { logs: message } };
+  if (newStatus) update.$set = { status: newStatus };
+  if (deployUrl) {
+    update.$set = { ...(update.$set || {}), deployUrl };
+  }
+  await Deployment.findByIdAndUpdate(id, update);
+};
+
+// ── Helper: recursively get all files ────────────────────────────────────────
 const getAllFiles = (dirPath) => {
   let filesList = [];
-
   const files = fs.readdirSync(dirPath);
-
-  // console.log(files);
 
   files.forEach((file) => {
     if (file === "node_modules" || file === ".git") return;
-
     const fullPath = path.join(dirPath, file);
-
     if (fs.statSync(fullPath).isDirectory()) {
       filesList = filesList.concat(getAllFiles(fullPath));
     } else {
@@ -153,14 +128,19 @@ const getAllFiles = (dirPath) => {
   return filesList;
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const getDeploymentStatus = async (id) => {
   const deployment = await Deployment.findById(id);
-  if (deployment) {
-    const redisStatus = await publisher.hGet("status", id.toString());
-    if (redisStatus) {
-      deployment.status = redisStatus;
-    }
+  if (!deployment) return null;
+
+  // Only use Redis status if it's a terminal "success" from the worker.
+  // Don't let "uploaded" (intermediate) overwrite the real MongoDB status.
+  const redisStatus = await publisher.hGet("status", id.toString());
+  if (redisStatus === "success" || redisStatus === "failed") {
+    deployment.status = redisStatus;
   }
+
   return deployment;
 };
 

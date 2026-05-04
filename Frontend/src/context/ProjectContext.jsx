@@ -108,7 +108,7 @@ export const ProjectProvider = ({ children }) => {
           framework,
           branch,
           time: now.toLocaleDateString(),
-          url: `${projectId}.deployez.app`,
+          url: null,
           deployments: [newDeployment],
         };
         return [newProject, ...prev];

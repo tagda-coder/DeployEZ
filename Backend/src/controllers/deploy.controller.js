@@ -9,7 +9,6 @@ import {
  * @desc Create a new deployment
  * @access Public
  */
-
 export const deployController = async (req, res) => {
   try {
     const { repoUrl } = req.body;
@@ -32,7 +31,6 @@ export const deployController = async (req, res) => {
  * @desc Get deployment status by ID
  * @access Public
  */
-
 export const getStatusController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -43,6 +41,7 @@ export const getStatusController = async (req, res) => {
     res.json({
       status: deployment.status,
       logs: deployment.logs,
+      deployUrl: deployment.deployUrl ?? null, // ← added
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -54,16 +53,11 @@ export const getStatusController = async (req, res) => {
  * @desc Get deployment logs by ID
  * @access Public
  */
-
 export const getLogsController = async (req, res) => {
   try {
     const { id } = req.params;
-
     const logs = await getDeploymentLogs(id);
-
-    res.json({
-      logs,
-    });
+    res.json({ logs });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
