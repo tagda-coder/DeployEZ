@@ -4,14 +4,17 @@ import { createBrowserRouter } from "react-router";
 import Layout from "../features/shared/components/Layout";
 
 // Pages
-import Dashboard from "../features/dashboard/pages/Dashboard";
-import Analytics from "../features/dashboard/pages/Analytics";
 import ProjectOverview from "../features/dashboard/pages/ProjectOverview";
-import DeployLogs from "../features/dashboard/pages/DeployLogs";
-// import Settings from "../features/dashboard/pages/Settings";
+import DeployLogs from "../features/dashboard/pages/DeployLogs"; 
+import Analytics from "../features/dashboard/pages/Analytics";
+import Dashboard from "../features/dashboard/pages/Dashboard";
 import Auth from "../features/auth/pages/Auth";
 import LandingPage from "./pages/LandingPage";
 import ErrorPage from "./pages/ErrorPage";
+
+// Components
+import Protected from "../features/auth/components/Protected";
+import Guest from "../features/auth/components/Guest";
 
 export const router = createBrowserRouter([
   {
@@ -20,11 +23,13 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <Protected>
+         <Dashboard />
+        </Protected>
       },
       {
         path: "analytics",
-        element: <Analytics />,
+        element: <Analytics />
       },
       {
         path: "project/:id",
@@ -38,11 +43,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/landing",
-    element: <LandingPage />,
+    element: <Guest>  
+      <LandingPage />
+      </Guest>
   },
   {
     path: "/auth",
-    element: <Auth />,
+    element: <Guest>  
+      <Auth />
+      </Guest>
   },
   {
     path: "*",

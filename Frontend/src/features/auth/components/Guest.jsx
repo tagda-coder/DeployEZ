@@ -1,5 +1,5 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { Navigate } from "react-router";
+import { useAuth } from "../hook/useAuth";
 
 const Guest = ({ children }) => {
   const { authLoading, user } = useAuth();
