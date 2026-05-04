@@ -3,8 +3,6 @@ import {
   GitPullRequest,
   UploadCloud,
   FolderUp,
-  GitBranch,
-  ArrowRight,
   FolderArchive,
   CheckCircle2,
 } from "lucide-react";
@@ -16,14 +14,14 @@ import { useAuth } from "../../auth/hook/useAuth";
 import { toast } from "react-toastify";
 
 const NewProjectModal = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState("github"); // "github" | "upload"
+  const [activeTab, setActiveTab] = useState("github");
   const [selectedRepo, setSelectedRepo] = useState("");
   const [customRepoUrl, setCustomRepoUrl] = useState("");
+  const [isDeploying, setIsDeploying] = useState(false);
   const { addProject } = useProjects();
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Prevent background scrolling when modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -38,46 +36,55 @@ const NewProjectModal = ({ onClose }) => {
     { name: "legacy-dashboard", updated: "2w ago", private: true },
   ];
 
-  const handleDeploy = () => {
-    // If upload active, or if custom github entered, we will pass repoUrl and projectName
-    // But currently we use ProjectContext
-    const isCustomUrl = customRepoUrl.trim().length > 0;
-
-    let projectName = "deployez-project";
-    let repoUrl = "";
-
+  const handleDeploy = async () => {
     if (activeTab === "upload") {
-      toast.error(
-        "Upload feature is coming soon! Please use a GitHub Repository for now.",
-      );
+      toast.error("Upload feature coming soon! Please use a GitHub URL.");
       return;
-    } else if (isCustomUrl) {
-      repoUrl = customRepoUrl;
-      // extract project name from url if possible
-      const parts = customRepoUrl.split("/");
+    }
+
+    const isCustomUrl = customRepoUrl.trim().length > 0;
+    let repoUrl = "";
+    let projectName = "my-project";
+
+    if (isCustomUrl) {
+      repoUrl = customRepoUrl.trim();
+      // Derive a clean project name from the URL
+      const parts = repoUrl.replace(/\/$/, "").split("/");
       projectName = parts[parts.length - 1] || "custom-project";
     } else if (selectedRepo) {
       projectName = selectedRepo;
-      repoUrl = `https://github.com/${user?.username || "demo-user"}/${projectName}`;
+      repoUrl = `https://github.com/${user?.username || "user"}/${selectedRepo}`;
     }
 
     if (!repoUrl) {
-      toast.error("Please select a repository or provide a custom Github URL.");
+      toast.error("Please select a repository or provide a GitHub URL.");
       return;
     }
 
-    addProject({
-      name: projectName,
-      repoUrl: repoUrl,
-      framework: "React",
-      branch: "main",
-    });
-    onClose();
-    // Assuming context redirects or handles this later. For now just navigate doesn't have real db ID yet, context returns a fake ID.
+    setIsDeploying(true);
+    try {
+      // addProject fires POST /api/deploy { repoUrl } and returns { projectId, deploymentId }
+      const result = await addProject({
+        name: projectName,
+        repoUrl,
+        framework: "React",
+        branch: "main",
+      });
+
+      onClose();
+
+      if (result?.projectId && result?.deploymentId) {
+        navigate(`/project/${result.projectId}/deploy/${result.deploymentId}`);
+      }
+    } catch {
+      // error toast is shown inside addProject
+    } finally {
+      setIsDeploying(false);
+    }
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-3xl bg-(--bg-base) border border-(--card-border) rounded-2xl shadow-2xl animate-in slide-in-from-bottom-4 zoom-in-95 duration-300 flex flex-col max-h-[85vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-(--card-border) shrink-0">
@@ -105,7 +112,7 @@ const NewProjectModal = ({ onClose }) => {
           >
             <GitPullRequest className="w-4 h-4" /> Import Repository
             {activeTab === "github" && (
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-(--color-accent) rounded-t-full"></div>
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-(--color-accent) rounded-t-full" />
             )}
           </button>
           <button
@@ -114,7 +121,7 @@ const NewProjectModal = ({ onClose }) => {
           >
             <FolderUp className="w-4 h-4" /> Upload Files
             {activeTab === "upload" && (
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-(--color-accent) rounded-t-full"></div>
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-(--color-accent) rounded-t-full" />
             )}
           </button>
         </div>
@@ -123,6 +130,7 @@ const NewProjectModal = ({ onClose }) => {
         <div className="p-6 flex flex-col gap-6 overflow-y-auto custom-scrollbar flex-1 bg-(--card-bg)">
           {activeTab === "github" && (
             <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+              {/* Connected account banner */}
               <div className="flex items-center justify-between p-4 border border-(--card-border) bg-(--bg-base) rounded-xl">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#24292e] flex items-center justify-center text-white">
@@ -137,34 +145,26 @@ const NewProjectModal = ({ onClose }) => {
                     </p>
                   </div>
                 </div>
-                <button className="text-sm font-medium text-(--color-accent) hover:underline">
-                  Change
-                </button>
               </div>
 
+              {/* Repo picker */}
               <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-(--text-label)">
-                    Select a Repository
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search repos..."
-                      className="px-3 py-1.5 text-sm bg-(--input-bg) border border-(--input-border) rounded-lg focus:outline-none focus:border-(--color-accent) text-(--text-primary) transition-all duration-300 w-48"
-                    />
-                  </div>
-                </div>
-
+                <label className="text-sm font-medium text-(--text-label)">
+                  Select a Repository
+                </label>
                 <div className="flex flex-col border border-(--card-border) rounded-xl overflow-hidden bg-(--bg-base)">
                   {fakeRepos.map((repo, i) => (
                     <div
                       key={i}
                       onClick={() => {
                         setSelectedRepo(repo.name);
-                        setCustomRepoUrl(""); // clear custom if predefined is clicked
+                        setCustomRepoUrl("");
                       }}
-                      className={`flex items-center justify-between p-4 border-b border-(--card-border) cursor-pointer transition-colors ${selectedRepo === repo.name && !customRepoUrl ? "bg-(--color-accent)/10" : "hover:bg-(--card-bg)"} last:border-b-0`}
+                      className={`flex items-center justify-between p-4 border-b border-(--card-border) cursor-pointer transition-colors last:border-b-0 ${
+                        selectedRepo === repo.name && !customRepoUrl
+                          ? "bg-(--color-accent)/10"
+                          : "hover:bg-(--card-bg)"
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <GitPullRequest className="w-5 h-5 text-(--text-muted)" />
@@ -177,22 +177,22 @@ const NewProjectModal = ({ onClose }) => {
                           </span>
                         )}
                       </div>
-                      {selectedRepo === repo.name ? (
+                      {selectedRepo === repo.name && !customRepoUrl ? (
                         <span className="text-sm font-medium text-(--color-accent) flex items-center gap-1">
                           Selected <CheckCircle2 className="w-4 h-4" />
                         </span>
                       ) : (
-                        <span className="text-xs text-(--text-muted)">
-                          {repo.updated}
-                        </span>
+                        <span className="text-xs text-(--text-muted)">{repo.updated}</span>
                       )}
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="flex flex-col gap-3 mt-4 border-t border-(--card-border) pt-4">
+
+              {/* Custom URL input */}
+              <div className="flex flex-col gap-3 border-t border-(--card-border) pt-4">
                 <label className="text-sm font-medium text-(--text-label)">
-                  Or Custom GitHub Repository URL
+                  Or paste a GitHub Repository URL
                 </label>
                 <div className="relative">
                   <GitPullRequest className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
@@ -202,7 +202,7 @@ const NewProjectModal = ({ onClose }) => {
                     value={customRepoUrl}
                     onChange={(e) => {
                       setCustomRepoUrl(e.target.value);
-                      if (e.target.value) setSelectedRepo(""); // clear predefined selection
+                      if (e.target.value) setSelectedRepo("");
                     }}
                     className="w-full pl-10 px-4 py-2 text-sm bg-(--input-bg) border border-(--input-border) rounded-lg focus:outline-none focus:border-(--color-accent) text-(--text-primary) transition-all duration-300"
                   />
@@ -213,7 +213,7 @@ const NewProjectModal = ({ onClose }) => {
 
           {activeTab === "upload" && (
             <div className="flex flex-col gap-6 animate-in fade-in duration-300 h-full">
-              <div className="flex-1 border-2 border-dashed border-(--card-border) hover:border-(--color-accent) rounded-2xl flex flex-col items-center justify-center gap-4 p-10 bg-(--bg-base) transition-colors cursor-pointer group min-h-[300px]">
+              <div className="flex-1 border-2 border-dashed border-(--card-border) hover:border-(--color-accent) rounded-2xl flex flex-col items-center justify-center gap-4 p-10 bg-(--bg-base) transition-colors cursor-pointer group min-h-75">
                 <div className="w-16 h-16 rounded-full bg-(--card-bg) border border-(--card-border) flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <FolderArchive className="w-8 h-8 text-(--color-accent)" />
                 </div>
@@ -222,11 +222,8 @@ const NewProjectModal = ({ onClose }) => {
                     Drag & Drop your project folder
                   </h3>
                   <p className="text-sm text-(--text-muted) mt-1">
-                    Or click to browse files from your computer
+                    Coming soon — use GitHub import for now.
                   </p>
-                </div>
-                <div className="flex items-center gap-2 text-xs font-medium text-(--text-muted) bg-(--card-bg) px-3 py-1.5 rounded-full border border-(--card-border)">
-                  <span>Supported: React, Next.js, Vite, Node, HTML/CSS</span>
                 </div>
               </div>
             </div>
@@ -243,10 +240,11 @@ const NewProjectModal = ({ onClose }) => {
           </button>
           <button
             onClick={handleDeploy}
+            disabled={isDeploying}
             className="flex items-center gap-2 px-5 py-2 bg-(--btn-primary-bg) text-(--btn-primary-text) hover:bg-(--btn-primary-bg-hover) hover:text-(--btn-primary-text-hover) rounded-lg font-medium transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <UploadCloud className="w-4 h-4" />
-            Deploy Project
+            {isDeploying ? "Deploying..." : "Deploy Project"}
           </button>
         </div>
       </div>

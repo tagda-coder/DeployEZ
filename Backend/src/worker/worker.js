@@ -8,12 +8,21 @@ const subscriber = createClient({
   url: process.env.REDIS_URL,
 });
 
+const publisher = createClient({
+  url: process.env.REDIS_URL,
+});
+
 subscriber.on("error", (err) => {
   console.error("Redis error:", err);
 });
 
+publisher.on("error", (err) => {
+  console.error("Redis publisher error:", err);
+});
+
 await subscriber.connect();
-console.log("🚀 Subscriber started...");
+await publisher.connect();
+console.log("🚀 Subscriber and Publisher started...");
 
 async function main() {
   while (true) {
@@ -26,6 +35,7 @@ async function main() {
       await downloadS3Folder(`deployments/${id}`, id);
       await buildProject(id);
       await copyFinalDistToS3(id);
+      publisher.hSet("status", id, "success"); // ✅ update status to completed
     } catch (error) {
       console.error("Worker error:", error); // ✅ fixed
     }
